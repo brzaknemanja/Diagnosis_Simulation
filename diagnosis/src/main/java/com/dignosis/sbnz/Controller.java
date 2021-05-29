@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.diagnosis.sbnz.model.Examination;
 import com.diagnosis.sbnz.model.Patient;
+import com.diagnosis.sbnz.model.enums.ExaminationType;
 
 @RestController
 public class Controller {
@@ -28,7 +30,7 @@ public class Controller {
 		kieSession.fireAllRules();
 		kieSession.dispose();
 		
-		return patient;
+		return this.patient;
 	}
 	
 	@GetMapping(value="simulate")
@@ -41,7 +43,22 @@ public class Controller {
 		kieSession.fireAllRules();
 		kieSession.dispose();
 		
-		return patient;
+		return this.patient;
+	}
+	
+	@GetMapping(value="examine")
+	public Patient examinePatient(@RequestParam ExaminationType examinationType) {
+	
+		Examination examination = new Examination();
+		examination.setExaminationType(examinationType);
+		
+		KieSession kieSession = kieContainer.newKieSession("rulesSession");
+		kieSession.insert(this.patient);
+		kieSession.insert(examination);
+		kieSession.fireAllRules();
+		kieSession.dispose();
+		
+		return this.patient;
 	}
 }
 

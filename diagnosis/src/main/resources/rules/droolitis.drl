@@ -1,0 +1,88 @@
+package rules
+
+import com.diagnosis.sbnz.model.Patient
+import com.diagnosis.sbnz.model.Illness
+import com.diagnosis.sbnz.model.Examination
+import com.diagnosis.sbnz.model.enums.SymptomType
+import com.diagnosis.sbnz.model.enums.IllnessType
+import com.diagnosis.sbnz.model.enums.ExaminationType
+
+rule "A - Droolitis phase 1"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 1 ) from $patient.illness
+	then
+		$patient.addSymptom(SymptomType.Tiredness);
+		$patient.addSymptom(SymptomType.Caughing);
+		update($patient)
+	end
+		
+rule "A - Droolitis phase 2"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 2 ) from $patient.illness
+	then
+		$patient.addSymptom(SymptomType.ShortnessBreath);
+		update($patient)
+	end
+	
+rule "A - Droolitis phase 3"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 3 ) from $patient.illness
+	then
+		$patient.getPatientState().setOxygenSaturation(0.85f);	
+		update($patient)
+	end
+	
+rule "A - Droolitis phase 5"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 5 ) from $patient.illness
+	then
+		$patient.addSymptom(SymptomType.CaughingBlood);
+		update($patient)
+	end
+	
+rule "A - Droolitis phase 7"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 7 ) from $patient.illness
+	then
+		$patient.addSymptom(SymptomType.ChestPain);
+		update($patient)
+	end
+	
+	
+rule "B - MRI Examination"
+	when 
+		$examination : Examination(examinationType == ExaminationType.MRI)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+	then
+		$examination.getResults().add("multiple masses");
+		$examination.getResults().add("damaged lungs");
+		$patient.getExaminations().add($examination);
+	end
+
+// ovde ubaciti potencijalno gusenje ukoliko jos nesto utice na pluca pacijenta iz life facts
+rule "B - Spirometry Examination"
+	when 
+		$examination : Examination(examinationType == ExaminationType.Spirometry)
+		$patient : Patient(patientState.getOxygenSaturation() < 0.95)
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+	then
+		$examination.getResults().add("lower lung capacity");
+		$patient.getExaminations().add($examination);
+	end
+	
+
+
+
+
+	

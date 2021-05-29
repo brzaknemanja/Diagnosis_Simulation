@@ -7,10 +7,10 @@ import com.diagnosis.sbnz.model.enums.IllnessType
 
 rule "Flu phase 1"
 	when 
-		patient : Patient()
-		eval( patient.getIllness().getIllnessType() == IllnessType.Flu && patient.getIllness().getIllnessPhase() == 1)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Flu) from $patient.illness
 	then
-		patient.addSymptom(SymptomType.RunyNose);
+		$patient.addSymptom(SymptomType.RunyNose);
 	end
 	
 rule "Flu phase 2"

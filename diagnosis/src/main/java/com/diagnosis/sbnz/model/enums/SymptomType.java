@@ -2,6 +2,10 @@ package com.diagnosis.sbnz.model.enums;
 
 public enum SymptomType {
 	Caughing,
+	CaughingBlood,
 	Fever,
-	RunyNose
+	RunyNose,
+	Tiredness,
+	ShortnessBreath,
+	ChestPain,
 }

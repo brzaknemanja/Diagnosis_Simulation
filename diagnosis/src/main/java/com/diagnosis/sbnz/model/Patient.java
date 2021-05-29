@@ -17,10 +17,12 @@ public class Patient {
 	PatientState patientState;
 	List<PatientLifeFact> lifeFacts;
 	List<SymptomType> symptoms;
+	List<Examination> examinations;
 	
 	public Patient() {
 		this.lifeFacts = new ArrayList<PatientLifeFact>();
 		this.symptoms = new ArrayList<SymptomType>();
+		this.examinations = new ArrayList<Examination>();
 	}
 	
 	public void addSymptom(SymptomType symptom) {
@@ -75,6 +77,13 @@ public class Patient {
 	public void setSymptoms(List<SymptomType> symptoms) {
 		this.symptoms = symptoms;
 	}
+	public List<Examination> getExaminations() {
+		return examinations;
+	}
+
+	public void setExaminations(List<Examination> examinations) {
+		this.examinations = examinations;
+	}
 
 	public static Patient CreateDefaultPatient() {
 		Patient patient = new Patient();
@@ -85,7 +94,7 @@ public class Patient {
 		patient.setPatientState(new PatientState());
 		
 		Illness illness = new Illness();
-		illness.setIllnessType(IllnessType.Flu);
+		illness.setIllnessType(IllnessType.Droolitis);
 		illness.illnessPhase = 1;
 		patient.setIllness(illness);
 			
