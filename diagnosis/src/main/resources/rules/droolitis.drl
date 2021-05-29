@@ -2,10 +2,14 @@ package rules
 
 import com.diagnosis.sbnz.model.Patient
 import com.diagnosis.sbnz.model.Illness
+import com.diagnosis.sbnz.model.PatientLifeFact
 import com.diagnosis.sbnz.model.Examination
+import com.diagnosis.sbnz.model.PotentialDamage
 import com.diagnosis.sbnz.model.enums.SymptomType
 import com.diagnosis.sbnz.model.enums.IllnessType
 import com.diagnosis.sbnz.model.enums.ExaminationType
+import com.diagnosis.sbnz.model.enums.FactType
+import com.diagnosis.sbnz.model.enums.PotentialDamageType
 
 rule "A - Droolitis phase 1"
 	lock-on-active
@@ -79,10 +83,47 @@ rule "B - Spirometry Examination"
 	then
 		$examination.getResults().add("lower lung capacity");
 		$patient.getExaminations().add($examination);
+		// insert potential symptom = due lung pressure masses can burst and patient can start caughing blood
+		PotentialSymptom potentialSymptom = new PotentialSymptom();
+		potentialSymptom.setSymptom(SymptomType.CaughingBlood);
+		insert(potentialSymptom);
 	end
 	
 
+declare PotentialSymptom
+	symptom: SymptomType
+end
 
-
+rule "C - Lung damage from running"
+	when
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$fact: PatientLifeFact(factType == FactType.Running) from $patient.lifeFacts
+		eval($fact.getDurationMonths() >= 3)
+	then
+		$patient.getPotentialDamages().add(new PotentialDamage(PotentialDamageType.Lungs));
+	end
+	
+rule "C - Lung damage from smoking"
+	when
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$fact: PatientLifeFact(factType == FactType.Smoking) from $patient.lifeFacts
+		eval($fact.getDurationYears() >= 4)
+	then
+		$patient.getPotentialDamages().add(new PotentialDamage(PotentialDamageType.Lungs));
+	end
+	
+rule "D - Potential symptom caughing blood from lung damage"
+	when 
+		$patient : Patient($potentialDamages: potentialDamages)
+		$potentialSymptom : PotentialSymptom(symptom == SymptomType.CaughingBlood)
+		Number($value: intValue >= 2) from accumulate(
+			PotentialDamage($t:this, damageType == PotentialDamageType.Lungs) from $potentialDamages,
+			count($t)
+		)
+	then
+		$patient.addSymptom(SymptomType.CaughingBlood);
+	end
 
 	

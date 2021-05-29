@@ -3,5 +3,6 @@ package com.diagnosis.sbnz.model.enums;
 public enum FactType {
 	Smoking,
 	Drugs,
-	Alcoholism
+	Alcoholism,
+	Running,
 }
