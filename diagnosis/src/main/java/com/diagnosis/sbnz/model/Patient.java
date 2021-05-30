@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.diagnosis.sbnz.events.DangerousSituationEvent;
 import com.diagnosis.sbnz.model.enums.FactType;
 import com.diagnosis.sbnz.model.enums.Gender;
 import com.diagnosis.sbnz.model.enums.IllnessType;
@@ -23,12 +24,16 @@ public class Patient {
 	List<SymptomType> symptoms;
 	List<PotentialDamage> potentialDamages;
 	List<Examination> examinations;
+	List<DangerousPatientSituation> dangerousPatientSituations;
+	List<DangerousSituationEvent> dangerousSituationEvents;
 	
 	public Patient() {
 		this.lifeFacts = new ArrayList<PatientLifeFact>();
 		this.symptoms = new ArrayList<SymptomType>();
 		this.examinations = new ArrayList<Examination>();
 		this.potentialDamages = new ArrayList<PotentialDamage>();
+		this.dangerousSituationEvents = new ArrayList<DangerousSituationEvent>();
+		this.dangerousPatientSituations = new ArrayList<DangerousPatientSituation>();
 	}
 	
 	public void addSymptom(SymptomType symptom) {
@@ -80,20 +85,17 @@ public class Patient {
 	public List<SymptomType> getSymptoms() {
 		return symptoms;
 	}
-	public void setSymptoms(List<SymptomType> symptoms) {
-		this.symptoms = symptoms;
-	}
 	public List<Examination> getExaminations() {
 		return examinations;
 	}
-	public void setExaminations(List<Examination> examinations) {
-		this.examinations = examinations;
-	}	
 	public List<PotentialDamage> getPotentialDamages() {
 		return potentialDamages;
 	}
-	public void setPotentialDamages(List<PotentialDamage> potentialDamages) {
-		this.potentialDamages = potentialDamages;
+	public List<DangerousSituationEvent> getDangerousSituationEvents() {
+		return dangerousSituationEvents;
+	}	
+	public List<DangerousPatientSituation> getDangerousPatientSituations() {
+		return dangerousPatientSituations;
 	}
 
 	public static Patient CreateDefaultPatient(IllnessType illnessType) {

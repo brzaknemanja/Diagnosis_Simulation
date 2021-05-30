@@ -10,6 +10,8 @@ import com.diagnosis.sbnz.model.enums.IllnessType
 import com.diagnosis.sbnz.model.enums.ExaminationType
 import com.diagnosis.sbnz.model.enums.FactType
 import com.diagnosis.sbnz.model.enums.PotentialDamageType
+import com.diagnosis.sbnz.events.DangerousSituationEvent
+import com.diagnosis.sbnz.model.DangerousPatientSituation
 
 rule "A - Droolitis phase 1"
 	lock-on-active
@@ -105,6 +107,37 @@ rule "D - Potential symptom caughing blood from lung damage"
 		)
 	then
 		$patient.addSymptom(SymptomType.CaughingBlood);
+		$patient.getDangerousPatientSituations().add(new DangerousPatientSituation(SymptomType.CaughingBlood));
 	end
 
+
+rule "insert dangerous event"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
+		not(DangerousPatientSituation(dangerousSymptom == SymptomType.LungsStopped) from $patient.dangerousPatientSituations)
+	then
+		$patient.getDangerousSituationEvents().add(new DangerousSituationEvent($dangerousSituation.getDangerousSymptom()));
+	end
+	
+rule "react to dangerous event"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
+		$d1: DangerousSituationEvent($eventSymptom: symptom) from $patient.dangerousSituationEvents
+		Number(intValue >= 2) from accumulate(
+            $d2: DangerousSituationEvent(
+                this != $d1, 
+                symptom == $eventSymptom, 
+                this meets[1m] $d1
+            ) from $patient.dangerousSituationEvents,
+            count($d2)
+        )
+    	not(DangerousPatientSituation(dangerousSymptom == SymptomType.LungsStopped) from $patient.dangerousPatientSituations)
+    then
+    	modify($patient).
+    	{
+    		getDangerousPatientSituations().add(new DangerousPatientSituation(SymptomType.LungsStopped));
+    	}
+    end
 	

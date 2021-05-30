@@ -8,4 +8,5 @@ public enum SymptomType {
 	Tiredness,
 	ShortnessBreath,
 	ChestPain,
+	LungsStopped,
 }
