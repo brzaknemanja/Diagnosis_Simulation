@@ -96,7 +96,7 @@ public class Patient {
 		this.potentialDamages = potentialDamages;
 	}
 
-	public static Patient CreateDefaultPatient() {
+	public static Patient CreateDefaultPatient(IllnessType illnessType) {
 		Patient patient = new Patient();
 		patient.setAge(26);
 		patient.setHeight(182);
@@ -105,7 +105,7 @@ public class Patient {
 		patient.setPatientState(new PatientState());
 		
 		Illness illness = new Illness();
-		illness.setIllnessType(IllnessType.Droolitis);
+		illness.setIllnessType(illnessType);
 		illness.illnessPhase = 1;
 		patient.setIllness(illness);
 		

@@ -1,0 +1,37 @@
+package rules
+
+import com.diagnosis.sbnz.model.Patient
+import com.diagnosis.sbnz.model.Illness
+import com.diagnosis.sbnz.model.PatientLifeFact
+import com.diagnosis.sbnz.model.Examination
+import com.diagnosis.sbnz.model.PotentialDamage
+import com.diagnosis.sbnz.model.enums.SymptomType
+import com.diagnosis.sbnz.model.enums.IllnessType
+import com.diagnosis.sbnz.model.enums.ExaminationType
+import com.diagnosis.sbnz.model.enums.FactType
+import com.diagnosis.sbnz.model.enums.PotentialDamageType
+
+
+rule "C - Lung damage from running"
+	agenda-group "illness-init"
+	when
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$fact: PatientLifeFact(factType == FactType.Running) from $patient.lifeFacts
+		eval($fact.getDurationMonths() >= 3)
+	then
+		$patient.getPotentialDamages().add(new PotentialDamage(PotentialDamageType.Lungs));
+	end
+	
+rule "C - Lung damage from smoking"
+	agenda-group "illness-init"
+	when
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$fact: PatientLifeFact(factType == FactType.Smoking) from $patient.lifeFacts
+		eval($fact.getDurationYears() >= 4)
+	then
+		$patient.getPotentialDamages().add(new PotentialDamage(PotentialDamageType.Lungs));
+	end
+	
+	

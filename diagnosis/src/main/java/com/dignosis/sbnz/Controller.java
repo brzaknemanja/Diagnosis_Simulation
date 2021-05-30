@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.diagnosis.sbnz.model.Examination;
 import com.diagnosis.sbnz.model.Patient;
 import com.diagnosis.sbnz.model.enums.ExaminationType;
+import com.diagnosis.sbnz.model.enums.IllnessType;
 
 @RestController
 public class Controller {
@@ -19,12 +20,27 @@ public class Controller {
 	
 	Patient patient;
 	
-	@GetMapping(value="getPatient")
-	public Patient getPatient() {
+	@GetMapping(value="initialize")
+	public Patient initializeIllness(@RequestParam IllnessType illnessType) {
 		
 		if (this.patient == null)
-			this.patient = Patient.CreateDefaultPatient();
+			this.patient = Patient.CreateDefaultPatient(illnessType);
 		
+		KieSession kieSession = kieContainer.newKieSession("rulesSession");
+		kieSession.getAgenda().getAgendaGroup("illness-init").setFocus();
+		kieSession.insert(this.patient);
+		kieSession.fireAllRules();
+		kieSession.dispose();
+		
+		
+		return this.patient;
+	}
+	
+	@GetMapping(value="getPatient")
+	public Patient getPatient() {		
+		if (this.patient == null)
+			return null;
+				
 		KieSession kieSession = kieContainer.newKieSession("rulesSession");
 		kieSession.insert(this.patient);
 		kieSession.fireAllRules();
@@ -34,7 +50,9 @@ public class Controller {
 	}
 	
 	@GetMapping(value="simulate")
-	public Patient simulateIllnessPhase() {	
+	public Patient simulateIllnessPhase() {			
+		if (this.patient == null)
+			return null;
 		
 		this.patient.getIllness().increaseIllnessPhase();
 		
@@ -49,6 +67,9 @@ public class Controller {
 	@GetMapping(value="examine")
 	public Patient examinePatient(@RequestParam ExaminationType examinationType) {
 	
+		if (this.patient == null)
+			return null;
+		
 		Examination examination = new Examination();
 		examination.setExaminationType(examinationType);
 		
