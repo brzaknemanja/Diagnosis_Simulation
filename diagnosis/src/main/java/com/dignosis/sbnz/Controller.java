@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.diagnosis.sbnz.dto.PatientDto;
 import com.diagnosis.sbnz.model.Examination;
 import com.diagnosis.sbnz.model.Patient;
 import com.diagnosis.sbnz.model.enums.ExaminationType;
@@ -21,7 +22,7 @@ public class Controller {
 	Patient patient;
 	
 	@GetMapping(value="initialize")
-	public Patient initializeIllness(@RequestParam IllnessType illnessType) {
+	public PatientDto initializeIllness(@RequestParam IllnessType illnessType) {
 		
 		if (this.patient == null)
 			this.patient = Patient.CreateDefaultPatient(illnessType);
@@ -33,7 +34,7 @@ public class Controller {
 		kieSession.dispose();
 		
 		
-		return this.patient;
+		return PatientDto.PatientToDto(this.patient);
 	}
 	
 	@GetMapping(value="getPatient")
@@ -54,7 +55,7 @@ public class Controller {
 		if (this.patient == null)
 			return null;
 		
-		this.patient.getIllness().increaseIllnessPhase();
+		//this.patient.getIllness().increaseIllnessPhase();
 		
 		KieSession kieSession = kieContainer.newKieSession("rulesSession");
 		kieSession.insert(this.patient);
@@ -69,6 +70,8 @@ public class Controller {
 	
 		if (this.patient == null)
 			return null;
+		
+		System.out.println(examinationType);
 		
 		Examination examination = new Examination();
 		examination.setExaminationType(examinationType);

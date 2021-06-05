@@ -18,6 +18,8 @@ rule "A - Droolitis phase 1"
 	when 
 		$patient : Patient()
 		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 1 ) from $patient.illness
+		eval(!$patient.getSymptoms().contains(SymptomType.Tiredness))
+		eval(!$patient.getSymptoms().contains(SymptomType.Caughing))
 	then
 		$patient.addSymptom(SymptomType.Tiredness);
 		$patient.addSymptom(SymptomType.Caughing);
@@ -29,6 +31,7 @@ rule "A - Droolitis phase 2"
 	when 
 		$patient : Patient()
 		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 2 ) from $patient.illness
+		eval(!$patient.getSymptoms().contains(SymptomType.ShortnessBreath))
 	then
 		$patient.addSymptom(SymptomType.ShortnessBreath);
 		update($patient)
@@ -49,6 +52,7 @@ rule "A - Droolitis phase 5"
 	when 
 		$patient : Patient()
 		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 5 ) from $patient.illness
+		eval(!$patient.getSymptoms().contains(SymptomType.CaughingBlood))
 	then
 		$patient.addSymptom(SymptomType.CaughingBlood);
 		update($patient)
@@ -59,6 +63,7 @@ rule "A - Droolitis phase 7"
 	when 
 		$patient : Patient()
 		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 7 ) from $patient.illness
+		eval(!$patient.getSymptoms().contains(SymptomType.ChestPain))
 	then
 		$patient.addSymptom(SymptomType.ChestPain);
 		update($patient)
@@ -111,7 +116,7 @@ rule "D - Potential symptom caughing blood from lung damage"
 	end
 
 
-rule "insert dangerous event"
+rule "Event - raise dangerous event for caughing blood"
 	when
 		$patient : Patient()
 		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
@@ -120,7 +125,7 @@ rule "insert dangerous event"
 		$patient.getDangerousSituationEvents().add(new DangerousSituationEvent($dangerousSituation.getDangerousSymptom()));
 	end
 	
-rule "react to dangerous event"
+rule "Event - react to dangerous event for caughing blood"
 	when
 		$patient : Patient()
 		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
