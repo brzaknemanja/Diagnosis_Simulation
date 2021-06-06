@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +7,11 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 {
     public PatientData patientData;
 
+    public Action onPatientInitialized;
+
     private void Start()
     {
-        RestApi.Instance.GetRequest("localhost:8080/initialize?illnessType=Droolitis", OnInitSucces, OnInitFail);
+        RestApi.Instance.GetRequest("localhost:8080/initialize?illnessType=Droolitis", OnInitSucces, null);
     }
 
     private void OnInitSucces(string data)
@@ -16,10 +19,13 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
         Debug.Log(data);
         patientData = JsonUtility.FromJson<PatientData>(data);
         Debug.Log(patientData);
+
+        if (onPatientInitialized != null)
+            onPatientInitialized.Invoke();
     }
 
-    private void OnInitFail(string data)
+    public void OnSimulateClick()
     {
-        Debug.Log(data);
+        RestApi.Instance.GetRequest("localhost:8080/simulate", OnInitSucces, null);
     }
 }

@@ -11,16 +11,17 @@ import com.diagnosis.sbnz.model.enums.SymptomType;
 
 public class PatientDto {
 	public int age;
-	public Gender gender;
+	public int gender;
 	public float weight;
 	public float height;
 	public List<Integer> symptoms;
 	public PatientStateDto patientState;
+	public List<PatientLifeFactDto> patientLifeFacts;
 	
 	public static PatientDto PatientToDto(Patient patient) {
 		PatientDto dto = new PatientDto();
 		dto.age = patient.getAge();
-		dto.gender = patient.getGender();
+		dto.gender = patient.getGender().ordinal();
 		dto.weight = patient.getWeight();
 		dto.height = patient.getHeight();
 		
@@ -30,6 +31,11 @@ public class PatientDto {
 		}
 		
 		dto.patientState = PatientStateDto.PatientStateToDto(patient.getPatientState());
+		
+		dto.patientLifeFacts = new ArrayList<PatientLifeFactDto>();
+		for (int i = 0; i < patient.getLifeFacts().size(); i++) {
+			dto.patientLifeFacts.add(PatientLifeFactDto.LifeFactToDto(patient.getLifeFacts().get(i)));
+		}
 		
 		return dto;
 	}

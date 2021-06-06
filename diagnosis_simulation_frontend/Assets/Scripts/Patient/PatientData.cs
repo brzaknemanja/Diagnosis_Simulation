@@ -11,6 +11,7 @@ public class PatientData
 	public float height;
 	public List<SymptomType> symptoms;
 	public PatientState patientState;
+	public List<PatientLifeFact> patientLifeFacts;
 }
 
 [Serializable]
@@ -23,7 +24,15 @@ public class PatientState
 	public float temperature;
 }
 
-	public enum SymptomType
+[Serializable]
+public class PatientLifeFact
+{
+	public string factName;
+	public string factDetail;
+	public string duration;
+}
+
+public enum SymptomType
 {
 	Caughing,
 	CaughingBlood,
@@ -37,5 +46,6 @@ public class PatientState
 
 public enum Gender
 {
-	FEMALE, MALE
+	FEMALE,
+	MALE
 }
