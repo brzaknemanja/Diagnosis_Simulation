@@ -8,6 +8,7 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
     public PatientData patientData;
 
     public Action onPatientInitialized;
+    public Action onPatientDataRefreshed;
 
     private void Start()
     {
@@ -22,10 +23,23 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 
         if (onPatientInitialized != null)
             onPatientInitialized.Invoke();
+
+        if (onPatientDataRefreshed != null)
+            onPatientDataRefreshed.Invoke();
     }
 
     public void OnSimulateClick()
     {
-        RestApi.Instance.GetRequest("localhost:8080/simulate", OnInitSucces, null);
+        RestApi.Instance.GetRequest("localhost:8080/simulate", OnRefreshSuccess, null);
+    }
+
+    private void OnRefreshSuccess(string data)
+    {
+        Debug.Log(data);
+        patientData = JsonUtility.FromJson<PatientData>(data);
+        Debug.Log(patientData);
+
+        if (onPatientDataRefreshed != null)
+            onPatientDataRefreshed.Invoke();
     }
 }

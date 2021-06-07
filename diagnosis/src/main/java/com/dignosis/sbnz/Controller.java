@@ -51,18 +51,18 @@ public class Controller {
 	}
 	
 	@GetMapping(value="simulate")
-	public Patient simulateIllnessPhase() {			
+	public PatientDto simulateIllnessPhase() {			
 		if (this.patient == null)
 			return null;
 		
-		//this.patient.getIllness().increaseIllnessPhase();
+		this.patient.getIllness().increaseIllnessPhase();
 		
 		KieSession kieSession = kieContainer.newKieSession("rulesSession");
 		kieSession.insert(this.patient);
 		kieSession.fireAllRules();
 		kieSession.dispose();
 		
-		return this.patient;
+		return PatientDto.PatientToDto(this.patient);
 	}
 	
 	@GetMapping(value="examine")
