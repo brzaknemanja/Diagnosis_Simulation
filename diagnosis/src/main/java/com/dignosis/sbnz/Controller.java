@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.diagnosis.sbnz.dto.ExaminationDto;
 import com.diagnosis.sbnz.dto.PatientDto;
 import com.diagnosis.sbnz.model.Examination;
 import com.diagnosis.sbnz.model.Patient;
@@ -66,7 +67,7 @@ public class Controller {
 	}
 	
 	@GetMapping(value="examine")
-	public Patient examinePatient(@RequestParam ExaminationType examinationType) {
+	public PatientDto examinePatient(@RequestParam ExaminationType examinationType) {
 	
 		if (this.patient == null)
 			return null;
@@ -82,7 +83,10 @@ public class Controller {
 		kieSession.fireAllRules();
 		kieSession.dispose();
 		
-		return this.patient;
+		PatientDto dto = PatientDto.PatientToDto(this.patient);
+		dto.lastExamination = ExaminationDto.ExaminationToDto(examination);
+		
+		return dto;
 	}
 }
 

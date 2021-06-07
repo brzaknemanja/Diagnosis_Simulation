@@ -33,7 +33,7 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
         RestApi.Instance.GetRequest("localhost:8080/simulate", OnRefreshSuccess, null);
     }
 
-    private void OnRefreshSuccess(string data)
+    public void OnRefreshSuccess(string data)
     {
         Debug.Log(data);
         patientData = JsonUtility.FromJson<PatientData>(data);

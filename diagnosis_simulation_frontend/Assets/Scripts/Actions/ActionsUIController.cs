@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ActionsUIController : MonoBehaviour
+public class ActionsUIController : MonobehaviourSingleton<ActionsUIController>
 {
     public List<ActionCardUIView> actionsCards;
 
@@ -35,6 +35,11 @@ public class ActionsUIController : MonoBehaviour
             actionCard.Init(actionsList[i]);
             actionCard.gameObject.SetActive(true);
         }
+    }
+
+    public void Toggle(bool toggle)
+    {
+        this.gameObject.SetActive(toggle);
     }
 
     private void OnEnable()

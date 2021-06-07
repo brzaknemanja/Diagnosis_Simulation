@@ -12,6 +12,9 @@ public class PatientData
 	public List<SymptomType> symptoms;
 	public PatientState patientState;
 	public List<PatientLifeFact> patientLifeFacts;
+	public List<Examination> examinations;
+
+	public Examination lastExamination;
 }
 
 [Serializable]
@@ -32,7 +35,15 @@ public class PatientLifeFact
 	public string duration;
 }
 
-public enum SymptomType
+[Serializable]
+public class Examination
+{
+	public ExaminationType examinationType;
+	public List<string> results;
+	public float resultValue;
+}
+
+	public enum SymptomType
 {
 	Caughing,
 	CaughingBlood,
@@ -48,4 +59,11 @@ public enum Gender
 {
 	FEMALE,
 	MALE
+}
+
+public enum ExaminationType
+{
+	CTScan,
+	MRI,
+	Spirometry,
 }

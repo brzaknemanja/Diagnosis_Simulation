@@ -17,6 +17,9 @@ public class PatientDto {
 	public List<Integer> symptoms;
 	public PatientStateDto patientState;
 	public List<PatientLifeFactDto> patientLifeFacts;
+	public List<ExaminationDto> examinations;
+	
+	public ExaminationDto lastExamination;
 	
 	public static PatientDto PatientToDto(Patient patient) {
 		PatientDto dto = new PatientDto();
@@ -35,6 +38,11 @@ public class PatientDto {
 		dto.patientLifeFacts = new ArrayList<PatientLifeFactDto>();
 		for (int i = 0; i < patient.getLifeFacts().size(); i++) {
 			dto.patientLifeFacts.add(PatientLifeFactDto.LifeFactToDto(patient.getLifeFacts().get(i)));
+		}
+		
+		dto.examinations = new ArrayList<ExaminationDto>();
+		for (int i = 0; i < patient.getExaminations().size(); i++) {
+			dto.examinations.add(ExaminationDto.ExaminationToDto(patient.getExaminations().get(i)));
 		}
 		
 		return dto;
