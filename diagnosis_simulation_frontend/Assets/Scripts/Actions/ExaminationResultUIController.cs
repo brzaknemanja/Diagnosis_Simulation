@@ -25,7 +25,7 @@ public class ExaminationResultUIController : MonoBehaviour
     public void Show(Examination examination)
     {
         examinationTitle.text = examination.examinationType.ToString();
-        resultValueText.text = examination.resultValue.ToString();
+        resultValueText.text = "Value: " + examination.resultValue.ToString();
         resultValueText.gameObject.SetActive(examination.resultValue != 0);
 
         for (int i = 0; i < examinationsTexts.Count; i++)

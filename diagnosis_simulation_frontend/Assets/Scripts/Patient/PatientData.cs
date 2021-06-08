@@ -63,7 +63,8 @@ public enum Gender
 
 public enum ExaminationType
 {
-	CTScan,
+	CT,
 	MRI,
 	Spirometry,
+	Leukocytes
 }

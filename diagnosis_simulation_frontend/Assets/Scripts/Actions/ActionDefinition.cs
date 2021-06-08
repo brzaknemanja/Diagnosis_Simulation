@@ -47,9 +47,16 @@ public class ActionDefinition
             ActionType.Examination, "MRI"),
     };
 
+    public static List<ActionDefinition> labTestsDefinitions = new List<ActionDefinition>()
+    {
+        new ActionDefinition("Leukocytes", "Test the number of leukocytes in blood.",
+            ActionType.Labarathory, "Leukocytes"),
+    };
+
     public static Dictionary<ActionType, List<ActionDefinition>> actionDefinitions = new Dictionary<ActionType, List<ActionDefinition>>()
     {
-        { ActionType.Examination, examinationDefinitions }
+        { ActionType.Examination, examinationDefinitions },
+        { ActionType.Labarathory, labTestsDefinitions },
     };
 
    

@@ -69,6 +69,27 @@ rule "A - Droolitis phase 7"
 		update($patient)
 	end
 	
+rule "B - Leukocytes lab examination before phase 3"
+	when 
+		$examination : Examination(examinationType == ExaminationType.Leukocytes)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase < 3 ) from $patient.illness
+	then
+		$examination.getResults().add("slightly increased");
+		$examination.setResultValue(8f);
+		$patient.getExaminations().add($examination);
+	end
+	
+rule "B - Leukocytes lab examination in phase 3"
+	when 
+		$examination : Examination(examinationType == ExaminationType.Leukocytes)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+	then
+		$examination.getResults().add("increased white blood cells");
+		$examination.setResultValue(20f);
+		$patient.getExaminations().add($examination);
+	end
 	
 rule "B - MRI Examination"
 	when 

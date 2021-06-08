@@ -15,7 +15,7 @@ public class ActionsUIController : MonobehaviourSingleton<ActionsUIController>
         this.gameObject.SetActive(false);
     }
 
-    public void TabButtonClicked(ActionType tabChoice)
+    private void OnTabButtonClicked(ActionType tabChoice)
     {
         var actionsList = ActionManager.Instance.GetActionsOfType(tabChoice);
         RefreshCardsView(actionsList);
@@ -37,6 +37,12 @@ public class ActionsUIController : MonobehaviourSingleton<ActionsUIController>
         }
     }
 
+    public void ChangeTab(int tab)
+    {
+        currentTabChoice = (ActionType)tab;
+        OnTabButtonClicked(currentTabChoice);
+    }
+
     public void Toggle(bool toggle)
     {
         this.gameObject.SetActive(toggle);
@@ -44,6 +50,6 @@ public class ActionsUIController : MonobehaviourSingleton<ActionsUIController>
 
     private void OnEnable()
     {
-        TabButtonClicked(currentTabChoice);
+        OnTabButtonClicked(currentTabChoice);
     }
 }

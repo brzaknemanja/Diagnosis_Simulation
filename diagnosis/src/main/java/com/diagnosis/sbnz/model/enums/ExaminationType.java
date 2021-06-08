@@ -1,7 +1,8 @@
 package com.diagnosis.sbnz.model.enums;
 
 public enum ExaminationType {
-	CTScan,
+	CT,
 	MRI,
 	Spirometry,
+	Leukocytes
 }
