@@ -18,6 +18,9 @@ public class BackendApiManager
             case ActionType.Labarathory:
                 restApiPoint += "examine?examinationType=" + actionDefinition.actionServerParam;
                 break;
+            case ActionType.Therapy:
+                restApiPoint += "therapy?therapyType=" + actionDefinition.actionServerParam;
+                break;
         }
 
         return restApiPoint;

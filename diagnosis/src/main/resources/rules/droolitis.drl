@@ -5,13 +5,18 @@ import com.diagnosis.sbnz.model.Illness
 import com.diagnosis.sbnz.model.PatientLifeFact
 import com.diagnosis.sbnz.model.Examination
 import com.diagnosis.sbnz.model.PotentialDamage
+import com.diagnosis.sbnz.model.DangerousPatientSituation
+import com.diagnosis.sbnz.model.Therapy
+
 import com.diagnosis.sbnz.model.enums.SymptomType
 import com.diagnosis.sbnz.model.enums.IllnessType
 import com.diagnosis.sbnz.model.enums.ExaminationType
 import com.diagnosis.sbnz.model.enums.FactType
 import com.diagnosis.sbnz.model.enums.PotentialDamageType
+import com.diagnosis.sbnz.model.enums.TherapyType
+
 import com.diagnosis.sbnz.events.DangerousSituationEvent
-import com.diagnosis.sbnz.model.DangerousPatientSituation
+
 
 rule "A - Droolitis phase 1"
 	lock-on-active
@@ -67,6 +72,26 @@ rule "A - Droolitis phase 7"
 	then
 		$patient.addSymptom(SymptomType.ChestPain);
 		update($patient)
+	end
+	
+rule "B - Therapy Drooliticin"
+	when 
+		$therapy : Therapy(therapyType == TherapyType.Drooliticin)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase < 8 ) from $patient.illness
+	then
+		System.out.println("Patient succesfully cured");
+		$patient.getTherapies().add($therapy);
+	end
+
+rule "B - Therapy Mitomicin"
+	when 
+		$therapy : Therapy(therapyType == TherapyType.Mitomicin)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase < 8 ) from $patient.illness
+	then
+		System.out.println("Patient died due Mitomicin posining");
+		$patient.getTherapies().add($therapy);
 	end
 	
 rule "B - Leukocytes lab examination before phase 3"

@@ -1,5 +1,7 @@
 package com.dignosis.sbnz;
 
+import java.util.Date;
+
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +13,10 @@ import com.diagnosis.sbnz.dto.ExaminationDto;
 import com.diagnosis.sbnz.dto.PatientDto;
 import com.diagnosis.sbnz.model.Examination;
 import com.diagnosis.sbnz.model.Patient;
+import com.diagnosis.sbnz.model.Therapy;
 import com.diagnosis.sbnz.model.enums.ExaminationType;
 import com.diagnosis.sbnz.model.enums.IllnessType;
+import com.diagnosis.sbnz.model.enums.TherapyType;
 
 @RestController
 public class Controller {
@@ -85,6 +89,27 @@ public class Controller {
 		
 		PatientDto dto = PatientDto.PatientToDto(this.patient);
 		dto.lastExamination = ExaminationDto.ExaminationToDto(examination);
+		
+		return dto;
+	}
+	
+	@GetMapping(value="therapy")
+	public PatientDto addPatientTherapy(@RequestParam TherapyType therapyType) {
+	
+		if (this.patient == null)
+			return null;
+		
+		System.out.println(therapyType);
+		
+		Therapy therapy = new Therapy(therapyType, new Date());
+		
+		KieSession kieSession = kieContainer.newKieSession("rulesSession");
+		kieSession.insert(this.patient);
+		kieSession.insert(therapy);
+		kieSession.fireAllRules();
+		kieSession.dispose();
+		
+		PatientDto dto = PatientDto.PatientToDto(this.patient);
 		
 		return dto;
 	}

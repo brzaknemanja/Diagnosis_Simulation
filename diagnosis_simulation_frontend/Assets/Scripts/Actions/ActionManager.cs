@@ -7,6 +7,8 @@ public class ActionManager : MonobehaviourSingleton<ActionManager>
 {
     public Action<Examination> onExaminationResultArrived;
 
+    private ActionDefinition lastAction;
+
     public List<ActionDefinition> GetActionsOfType(ActionType actionType)
     {
         return ActionDefinition.GetActionsOfType(actionType);
@@ -14,6 +16,7 @@ public class ActionManager : MonobehaviourSingleton<ActionManager>
 
     public void SendPatienAction(ActionDefinition actionDefinition)
     {
+        lastAction = actionDefinition;
         string restApi = BackendApiManager.GetActionRestPoint(actionDefinition);
         RestApi.Instance.GetRequest(restApi, OnActionSuccess, OnActionFail);
     }
@@ -24,7 +27,7 @@ public class ActionManager : MonobehaviourSingleton<ActionManager>
         PatientManager.Instance.OnRefreshSuccess(data);
         ActionsUIController.Instance.Toggle(false);
 
-        if (onExaminationResultArrived != null)
+        if (onExaminationResultArrived != null && lastAction.actionType != ActionType.Therapy)
             onExaminationResultArrived.Invoke(PatientManager.Instance.patientData.lastExamination);
     }
 

@@ -24,6 +24,7 @@ public class Patient {
 	List<SymptomType> symptoms;
 	List<PotentialDamage> potentialDamages;
 	List<Examination> examinations;
+	List<Therapy> therapies;
 	List<DangerousPatientSituation> dangerousPatientSituations;
 	List<DangerousSituationEvent> dangerousSituationEvents;
 	
@@ -34,6 +35,7 @@ public class Patient {
 		this.potentialDamages = new ArrayList<PotentialDamage>();
 		this.dangerousSituationEvents = new ArrayList<DangerousSituationEvent>();
 		this.dangerousPatientSituations = new ArrayList<DangerousPatientSituation>();
+		this.therapies = new ArrayList<Therapy>();
 	}
 	
 	public void addSymptom(SymptomType symptom) {
@@ -96,6 +98,9 @@ public class Patient {
 	}	
 	public List<DangerousPatientSituation> getDangerousPatientSituations() {
 		return dangerousPatientSituations;
+	}
+	public List<Therapy> getTherapies() {
+		return therapies;
 	}
 
 	public static Patient CreateDefaultPatient(IllnessType illnessType) {

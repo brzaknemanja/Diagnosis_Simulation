@@ -53,10 +53,19 @@ public class ActionDefinition
             ActionType.Labarathory, "Leukocytes"),
     };
 
+    public static List<ActionDefinition> therapyDefinitions = new List<ActionDefinition>()
+    {
+        new ActionDefinition("Mitomicin", "Used as radiation therapy for lung cancer.",
+            ActionType.Therapy, "Mitomicin"),
+        new ActionDefinition("Drooliticin", "Used to cure dangerous infection Droolitis",
+            ActionType.Therapy, "Drooliticin"),
+    };
+
     public static Dictionary<ActionType, List<ActionDefinition>> actionDefinitions = new Dictionary<ActionType, List<ActionDefinition>>()
     {
         { ActionType.Examination, examinationDefinitions },
         { ActionType.Labarathory, labTestsDefinitions },
+        { ActionType.Therapy, therapyDefinitions },
     };
 
    
