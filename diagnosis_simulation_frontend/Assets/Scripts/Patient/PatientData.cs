@@ -13,6 +13,7 @@ public class PatientData
 	public PatientState patientState;
 	public List<PatientLifeFact> patientLifeFacts;
 	public List<Examination> examinations;
+	public PatientHealthState currentPatientHealthState;
 
 	public Examination lastExamination;
 }
@@ -43,7 +44,7 @@ public class Examination
 	public float resultValue;
 }
 
-	public enum SymptomType
+public enum SymptomType
 {
 	Caughing,
 	CaughingBlood,
@@ -67,4 +68,11 @@ public enum ExaminationType
 	MRI,
 	Spirometry,
 	Leukocytes
+}
+
+public enum PatientHealthState
+{
+	Diagnosing,
+	Cured,
+	Dead
 }

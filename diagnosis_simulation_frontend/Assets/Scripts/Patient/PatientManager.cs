@@ -9,6 +9,7 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 
     public Action onPatientInitialized;
     public Action onPatientDataRefreshed;
+    public Action onPatientHealthStateUpdate;
 
     private void Start()
     {
@@ -41,5 +42,8 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 
         if (onPatientDataRefreshed != null)
             onPatientDataRefreshed.Invoke();
+
+        if (onPatientHealthStateUpdate != null)
+            onPatientHealthStateUpdate.Invoke();
     }
 }

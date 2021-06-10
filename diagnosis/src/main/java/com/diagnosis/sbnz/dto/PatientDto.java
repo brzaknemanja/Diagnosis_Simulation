@@ -18,6 +18,7 @@ public class PatientDto {
 	public PatientStateDto patientState;
 	public List<PatientLifeFactDto> patientLifeFacts;
 	public List<ExaminationDto> examinations;
+	public int currentPatientHealthState;
 	
 	public ExaminationDto lastExamination;
 	
@@ -44,6 +45,8 @@ public class PatientDto {
 		for (int i = 0; i < patient.getExaminations().size(); i++) {
 			dto.examinations.add(ExaminationDto.ExaminationToDto(patient.getExaminations().get(i)));
 		}
+		
+		dto.currentPatientHealthState = patient.getCurrentPatientHealthState().ordinal();
 		
 		return dto;
 	}

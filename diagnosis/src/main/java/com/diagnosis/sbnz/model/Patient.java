@@ -10,6 +10,7 @@ import com.diagnosis.sbnz.events.DangerousSituationEvent;
 import com.diagnosis.sbnz.model.enums.FactType;
 import com.diagnosis.sbnz.model.enums.Gender;
 import com.diagnosis.sbnz.model.enums.IllnessType;
+import com.diagnosis.sbnz.model.enums.PatientHealthState;
 import com.diagnosis.sbnz.model.enums.SymptomType;
 
 public class Patient {
@@ -27,6 +28,7 @@ public class Patient {
 	List<Therapy> therapies;
 	List<DangerousPatientSituation> dangerousPatientSituations;
 	List<DangerousSituationEvent> dangerousSituationEvents;
+	PatientHealthState currentPatientHealthState;
 	
 	public Patient() {
 		this.lifeFacts = new ArrayList<PatientLifeFact>();
@@ -102,6 +104,14 @@ public class Patient {
 	public List<Therapy> getTherapies() {
 		return therapies;
 	}
+		
+	public PatientHealthState getCurrentPatientHealthState() {
+		return currentPatientHealthState;
+	}
+
+	public void setCurrentPatientHealthState(PatientHealthState currentPatientHealthState) {
+		this.currentPatientHealthState = currentPatientHealthState;
+	}
 
 	public static Patient CreateDefaultPatient(IllnessType illnessType) {
 		Patient patient = new Patient();
@@ -109,6 +119,7 @@ public class Patient {
 		patient.setHeight(182);
 		patient.setWeight(80);
 		patient.setGender(Gender.MALE);
+		patient.setCurrentPatientHealthState(PatientHealthState.Diagnosing);
 		patient.setPatientState(new PatientState());
 		
 		Illness illness = new Illness();
