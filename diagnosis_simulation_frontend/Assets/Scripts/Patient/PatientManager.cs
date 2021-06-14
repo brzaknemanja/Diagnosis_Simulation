@@ -46,4 +46,10 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
         if (onPatientHealthStateUpdate != null)
             onPatientHealthStateUpdate.Invoke();
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+            OnSimulateClick();
+    }
 }

@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.diagnosis.sbnz.dto.ExaminationDto;
 import com.diagnosis.sbnz.dto.PatientDto;
 import com.diagnosis.sbnz.model.Examination;
+import com.diagnosis.sbnz.model.MedicalProcedure;
 import com.diagnosis.sbnz.model.Patient;
 import com.diagnosis.sbnz.model.Therapy;
 import com.diagnosis.sbnz.model.enums.ExaminationType;
 import com.diagnosis.sbnz.model.enums.IllnessType;
+import com.diagnosis.sbnz.model.enums.MedicalProcedureType;
 import com.diagnosis.sbnz.model.enums.TherapyType;
 
 @RestController
@@ -106,6 +108,27 @@ public class Controller {
 		KieSession kieSession = kieContainer.newKieSession("rulesSession");
 		kieSession.insert(this.patient);
 		kieSession.insert(therapy);
+		kieSession.fireAllRules();
+		kieSession.dispose();
+		
+		PatientDto dto = PatientDto.PatientToDto(this.patient);
+		
+		return dto;
+	}
+	
+	@GetMapping(value="procedure")
+	public PatientDto addPatientTherapy(@RequestParam MedicalProcedureType procedureType) {
+	
+		if (this.patient == null)
+			return null;
+		
+		System.out.println(procedureType);
+		
+		MedicalProcedure procedure = new MedicalProcedure(procedureType);
+		
+		KieSession kieSession = kieContainer.newKieSession("rulesSession");
+		kieSession.insert(this.patient);
+		kieSession.insert(procedure);
 		kieSession.fireAllRules();
 		kieSession.dispose();
 		

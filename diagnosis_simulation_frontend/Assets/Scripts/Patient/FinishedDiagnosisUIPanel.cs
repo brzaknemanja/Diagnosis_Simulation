@@ -21,14 +21,14 @@ public class FinishedDiagnosisUIPanel : MonoBehaviour
         {
             titleText.text = "Diagnosis Finished";
             descriptionText.text = "Patient successfully cured!";
+            this.gameObject.SetActive(true);
         }
         else if (patientData.currentPatientHealthState == PatientHealthState.Dead)
         {
             titleText.text = "Diagnosis Failed";
             descriptionText.text = "Patient ended up in critical state, other diagnosis team had to take this case.";
-        }
-
-        this.gameObject.SetActive(true);
+            this.gameObject.SetActive(true);
+        }      
     }
 
     public void OnContinueClick()

@@ -14,6 +14,7 @@ public class PatientData
 	public List<PatientLifeFact> patientLifeFacts;
 	public List<Examination> examinations;
 	public PatientHealthState currentPatientHealthState;
+	public SymptomType currentDangerousSituation;
 
 	public Examination lastExamination;
 }
@@ -46,6 +47,7 @@ public class Examination
 
 public enum SymptomType
 {
+	None,
 	Caughing,
 	CaughingBlood,
 	Fever,

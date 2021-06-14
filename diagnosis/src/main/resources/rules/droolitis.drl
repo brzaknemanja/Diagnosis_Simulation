@@ -7,6 +7,7 @@ import com.diagnosis.sbnz.model.Examination
 import com.diagnosis.sbnz.model.PotentialDamage
 import com.diagnosis.sbnz.model.DangerousPatientSituation
 import com.diagnosis.sbnz.model.Therapy
+import com.diagnosis.sbnz.model.MedicalProcedure
 
 import com.diagnosis.sbnz.model.enums.SymptomType
 import com.diagnosis.sbnz.model.enums.IllnessType
@@ -15,6 +16,7 @@ import com.diagnosis.sbnz.model.enums.FactType
 import com.diagnosis.sbnz.model.enums.PotentialDamageType
 import com.diagnosis.sbnz.model.enums.TherapyType
 import com.diagnosis.sbnz.model.enums.PatientHealthState
+import com.diagnosis.sbnz.model.enums.MedicalProcedureType
 
 import com.diagnosis.sbnz.events.DangerousSituationEvent
 
@@ -158,8 +160,20 @@ rule "D - Potential symptom caughing blood from lung damage"
 			count($t)
 		)
 	then
-		$patient.addSymptom(SymptomType.CaughingBlood);
-		$patient.getDangerousPatientSituations().add(new DangerousPatientSituation(SymptomType.CaughingBlood));
+		DangerousPatientSituation dangerousSituation = new DangerousPatientSituation(SymptomType.CaughingBlood);
+		$patient.getDangerousPatientSituations().add(dangerousSituation);
+		$patient.setCurrentDangerousSituation(dangerousSituation);
+	end
+	
+rule "Suction procedure for caughing blood"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$procedure: MedicalProcedure(procedureType == MedicalProcedureType.Suction)
+	then
+		$patient.removeDangerousSituation(SymptomType.CaughingBlood);
+		$patient.setCurrentDangerousSituation(null);
 	end
 
 
@@ -187,9 +201,22 @@ rule "Event - react to dangerous event for caughing blood"
         )
     	not(DangerousPatientSituation(dangerousSymptom == SymptomType.LungsStopped) from $patient.dangerousPatientSituations)
     then
+    	DangerousPatientSituation dangerousSituation = new DangerousPatientSituation(SymptomType.LungsStopped);
     	modify($patient).
     	{
-    		getDangerousPatientSituations().add(new DangerousPatientSituation(SymptomType.LungsStopped));
+    		getDangerousPatientSituations().add(dangerousSituation),
+    		setCurrentDangerousSituation(dangerousSituation)
     	}
     end
+    
+rule "Intubation procedure for respiratory failure"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LungsStopped) from $patient.dangerousPatientSituations
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$procedure: MedicalProcedure(procedureType == MedicalProcedureType.Intubation)
+	then
+		$patient.removeDangerousSituation(SymptomType.LungsStopped);
+		$patient.setCurrentDangerousSituation(null);
+	end
 	

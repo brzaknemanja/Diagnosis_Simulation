@@ -6,7 +6,8 @@ public enum ActionType
 {
     Examination,
     Therapy,
-    Labarathory
+    Labarathory,
+    Procedure
 }
 
 public class ActionDefinition
@@ -61,11 +62,22 @@ public class ActionDefinition
             ActionType.Therapy, "Drooliticin"),
     };
 
+    public static List<ActionDefinition> procedureDefinitions = new List<ActionDefinition>()
+    {
+        new ActionDefinition("Suction", "A suction machine, also known as an aspirator, is a type of medical device that is primarily used for removing obstructions — like mucus, saliva, blood, or secretions — from a person’s airway..",
+            ActionType.Procedure, "Suction"),
+        new ActionDefinition("Defibrillation", "Defibrillation is an emergency treatment for ventricular fibrillation and other life-threatening arrhythmias (abnormal heartbeats)",
+            ActionType.Procedure, "Defibrillation"),
+        new ActionDefinition("Intubation", "Intubation is a procedure that's used when you can't breathe on your own. Your doctor puts a tube down your throat and into your windpipe to make it easier to get air into and out of your lungs.",
+            ActionType.Procedure, "Intubation"),
+    };
+
     public static Dictionary<ActionType, List<ActionDefinition>> actionDefinitions = new Dictionary<ActionType, List<ActionDefinition>>()
     {
         { ActionType.Examination, examinationDefinitions },
         { ActionType.Labarathory, labTestsDefinitions },
         { ActionType.Therapy, therapyDefinitions },
+        { ActionType.Procedure, procedureDefinitions }
     };
 
    

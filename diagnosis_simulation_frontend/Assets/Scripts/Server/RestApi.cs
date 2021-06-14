@@ -16,7 +16,7 @@ public class RestApi : MonobehaviourSingleton<RestApi>
         var www = UnityWebRequest.Get(url);
         yield return www.SendWebRequest();
 
-        if (www.isNetworkError || www.isNetworkError)
+        if (www.isNetworkError || www.isNetworkError || www.isHttpError)
         {
             Debug.LogError(www.error);
             if (onFail != null)

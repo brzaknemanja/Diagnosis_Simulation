@@ -29,6 +29,7 @@ public class Patient {
 	List<DangerousPatientSituation> dangerousPatientSituations;
 	List<DangerousSituationEvent> dangerousSituationEvents;
 	PatientHealthState currentPatientHealthState;
+	DangerousPatientSituation currentDangerousSituation;
 	
 	public Patient() {
 		this.lifeFacts = new ArrayList<PatientLifeFact>();
@@ -111,6 +112,18 @@ public class Patient {
 
 	public void setCurrentPatientHealthState(PatientHealthState currentPatientHealthState) {
 		this.currentPatientHealthState = currentPatientHealthState;
+	}
+	
+	public DangerousPatientSituation getCurrentDangerousSituation() {
+		return currentDangerousSituation;
+	}
+
+	public void setCurrentDangerousSituation(DangerousPatientSituation currentDangerousSituation) {
+		this.currentDangerousSituation = currentDangerousSituation;
+	}
+	
+	public void removeDangerousSituation(SymptomType symptomType) {
+		this.dangerousPatientSituations.removeIf(x -> x.dangerousSymptom == symptomType);
 	}
 
 	public static Patient CreateDefaultPatient(IllnessType illnessType) {

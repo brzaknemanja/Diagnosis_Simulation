@@ -25,10 +25,13 @@ public class ActionManager : MonobehaviourSingleton<ActionManager>
     {
         Debug.Log(data);
         PatientManager.Instance.OnRefreshSuccess(data);
-        ActionsUIController.Instance.Toggle(false);
-
-        if (onExaminationResultArrived != null && lastAction.actionType != ActionType.Therapy)
+        
+        if (onExaminationResultArrived != null && (lastAction.actionType == ActionType.Examination ||
+            lastAction.actionType == ActionType.Labarathory))
             onExaminationResultArrived.Invoke(PatientManager.Instance.patientData.lastExamination);
+
+        if (lastAction.actionType != ActionType.Procedure)
+            ActionsUIController.Instance.Toggle(false);
     }
 
     private void OnActionFail(string data)

@@ -1,6 +1,7 @@
 package com.diagnosis.sbnz.model.enums;
 
 public enum SymptomType {
+	None,
 	Caughing,
 	CaughingBlood,
 	Fever,

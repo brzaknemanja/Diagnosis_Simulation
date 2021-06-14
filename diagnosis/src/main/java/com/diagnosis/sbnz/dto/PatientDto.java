@@ -19,6 +19,7 @@ public class PatientDto {
 	public List<PatientLifeFactDto> patientLifeFacts;
 	public List<ExaminationDto> examinations;
 	public int currentPatientHealthState;
+	public int currentDangerousSituation;
 	
 	public ExaminationDto lastExamination;
 	
@@ -47,6 +48,10 @@ public class PatientDto {
 		}
 		
 		dto.currentPatientHealthState = patient.getCurrentPatientHealthState().ordinal();
+		if (patient.getCurrentDangerousSituation() == null)
+			dto.currentDangerousSituation = 0; // symptom type None
+		else
+			dto.currentDangerousSituation = patient.getCurrentDangerousSituation().getDangerousSymptom().ordinal();
 		
 		return dto;
 	}
