@@ -170,4 +170,38 @@ public class Patient {
 			
 		return patient;
 	}
+	
+	public static Patient CreatePatient2() {
+		Patient patient = new Patient();
+		patient.setAge(50);
+		patient.setHeight(170);
+		patient.setWeight(110);
+		patient.setGender(Gender.MALE);
+		patient.setCurrentPatientHealthState(PatientHealthState.Diagnosing);
+		patient.setPatientState(new PatientState());
+		
+		Illness illness = new Illness();
+		illness.setIllnessType(IllnessType.Droolitis);
+		illness.illnessPhase = 1;
+		patient.setIllness(illness);
+		
+		// alcoholism for 3 years
+		PatientLifeFact fact1 = new PatientLifeFact();
+		fact1.setFactType(FactType.Alcoholism);
+		fact1.setFactDetail("daily drinking");
+		fact1.setStart(Date.from(LocalDate.now().minusYears(3).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		fact1.setEnd(new Date());
+		
+		// Unhealthy Lifestyle for 5 years
+		PatientLifeFact fact2 = new PatientLifeFact();
+		fact2.setFactType(FactType.UnhealthyLifestyle);
+		fact2.setFactDetail("unhealthy diet, fast food");
+		fact2.setStart(Date.from(LocalDate.now().minusYears(5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		fact2.setEnd(new Date());
+			
+		patient.getLifeFacts().add(fact1);
+		patient.getLifeFacts().add(fact2);
+			
+		return patient;
+	}
 }

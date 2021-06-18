@@ -10,4 +10,7 @@ public enum SymptomType {
 	ShortnessBreath,
 	ChestPain,
 	LungsStopped,
+	CardiacArrest,
+	Arrhythmia,
+	Dizziness
 }

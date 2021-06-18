@@ -1,0 +1,99 @@
+package rules
+
+import com.diagnosis.sbnz.model.Patient
+import com.diagnosis.sbnz.model.Illness
+import com.diagnosis.sbnz.model.PatientLifeFact
+import com.diagnosis.sbnz.model.Examination
+import com.diagnosis.sbnz.model.PotentialDamage
+import com.diagnosis.sbnz.model.DangerousPatientSituation
+import com.diagnosis.sbnz.model.Therapy
+import com.diagnosis.sbnz.model.MedicalProcedure
+
+import com.diagnosis.sbnz.model.enums.SymptomType
+import com.diagnosis.sbnz.model.enums.IllnessType
+import com.diagnosis.sbnz.model.enums.ExaminationType
+import com.diagnosis.sbnz.model.enums.FactType
+import com.diagnosis.sbnz.model.enums.PotentialDamageType
+import com.diagnosis.sbnz.model.enums.TherapyType
+import com.diagnosis.sbnz.model.enums.PatientHealthState
+import com.diagnosis.sbnz.model.enums.MedicalProcedureType
+
+import com.diagnosis.sbnz.events.DangerousSituationEvent
+
+declare PotentialSymptom
+	symptom: SymptomType
+end
+
+rule "B - Leukocytes lab examination before phase 3"
+	when 
+		$examination : Examination(examinationType == ExaminationType.Leukocytes)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase < 3 ) from $patient.illness
+		eval($patient.getPatientState().getBloodParameters().getLeukocytes() >= 6f && $patient.getPatientState().getBloodParameters().getLeukocytes() <= 15f)
+	then
+		$examination.getResults().add("slightly increased");
+		$examination.setResultValue($patient.getPatientState().getBloodParameters().getLeukocytes());
+		$patient.getExaminations().add($examination);
+	end
+	
+rule "B - Leukocytes lab examination in phase 3"
+	when 
+		$examination : Examination(examinationType == ExaminationType.Leukocytes)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+		eval($patient.getPatientState().getBloodParameters().getLeukocytes() >= 15f)
+	then
+		$examination.getResults().add("increased white blood cells");
+		$examination.setResultValue($patient.getPatientState().getBloodParameters().getLeukocytes());
+		$patient.getExaminations().add($examination);
+	end
+	
+rule "B - Cholesterol lab examination normal values"
+	when 
+		$examination : Examination(examinationType == ExaminationType.Cholesterol)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		eval($patient.getPatientState().getBloodParameters().getCholesterol() <= 5.5f && $patient.getPatientState().getBloodParameters().getCholesterol() >= 3.1f)
+	then
+		$examination.getResults().add("normal value");
+		$examination.setResultValue($patient.getPatientState().getBloodParameters().getCholesterol());
+		$patient.getExaminations().add($examination);
+	end
+	
+rule "B - Cholesterol lab examination increased"
+	when 
+		$examination : Examination(examinationType == ExaminationType.Cholesterol)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		eval($patient.getPatientState().getBloodParameters().getCholesterol() > 5.5f)
+	then
+		$examination.getResults().add("increased fats");
+		$examination.setResultValue($patient.getPatientState().getBloodParameters().getCholesterol());
+		$patient.getExaminations().add($examination);
+	end
+	
+rule "B - MRI Examination"
+	when 
+		$examination : Examination(examinationType == ExaminationType.MRI)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+	then
+		$examination.getResults().add("multiple masses");
+		$examination.getResults().add("damaged lungs");
+		$patient.getExaminations().add($examination);
+	end
+
+rule "B - Spirometry Examination"
+	when 
+		$examination : Examination(examinationType == ExaminationType.Spirometry)
+		$patient : Patient(patientState.getOxygenSaturation() < 0.95)
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+	then
+		$examination.getResults().add("lower lung capacity");
+		$patient.getExaminations().add($examination);
+		
+		// insert potential symptom = due lung pressure masses can burst and patient can start caughing blood
+		PotentialSymptom potentialSymptom = new PotentialSymptom();
+		potentialSymptom.setSymptom(SymptomType.CaughingBlood);
+		insert(potentialSymptom);
+	end

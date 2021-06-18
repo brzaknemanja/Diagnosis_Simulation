@@ -32,7 +32,7 @@ public class Controller {
 	public PatientDto initializeIllness(@RequestParam IllnessType illnessType) {
 		
 		if (this.patient == null)
-			this.patient = Patient.CreateDefaultPatient(illnessType);
+			this.patient = Patient.CreatePatient2();
 		
 		KieSession kieSession = kieContainer.newKieSession("rulesSession");
 		kieSession.getAgenda().getAgendaGroup("illness-init").setFocus();

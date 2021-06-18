@@ -52,6 +52,8 @@ public class ActionDefinition
     {
         new ActionDefinition("Leukocytes", "Test the number of leukocytes in blood.",
             ActionType.Labarathory, "Leukocytes"),
+        new ActionDefinition("Cholesterol", "A cholesterol test is a blood test that measures the amount of each type of cholesterol and certain fats in your blood. Too much LDL cholesterol in your blood may put you at risk for heart disease and other serious conditions.",
+            ActionType.Labarathory, "Cholesterol"),
     };
 
     public static List<ActionDefinition> therapyDefinitions = new List<ActionDefinition>()

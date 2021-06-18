@@ -63,6 +63,28 @@ rule "Droolitis illness progression phase 5"
 		$patient.getIllness().increaseIllnessPhase();
 		update($patient)
 	end
+	
+rule "Droolitis illness progression phase 6"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 5) from $patient.illness
+		eval($patient.getIllnessProgressionCoefficient() >= 18)
+	then
+		$patient.getIllness().increaseIllnessPhase();
+		update($patient)
+	end
+	
+rule "Droolitis illness progression phase 7"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 6) from $patient.illness
+		eval($patient.getIllnessProgressionCoefficient() >= 24)
+	then
+		$patient.getIllness().increaseIllnessPhase();
+		update($patient)
+	end
 
 
 rule "A - Droolitis phase 1 symptoms"
@@ -75,6 +97,7 @@ rule "A - Droolitis phase 1 symptoms"
 	then
 		$patient.addSymptom(SymptomType.Tiredness);
 		$patient.addSymptom(SymptomType.Caughing);
+		$patient.getPatientState().getBloodParameters().setLeukocytes(10f);
 		update($patient)
 	end
 		
@@ -98,6 +121,35 @@ rule "A - Droolitis phase 3 symptoms"
 		$patient.getPatientState().setOxygenSaturation(0.85f);	
 		update($patient)
 	end
+
+rule "A - Droolitis phase 3 symptoms hearth damaged"
+	lock-on-active
+	when 
+		$patient : Patient($potentialDamages: potentialDamages)
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+		Number($value: intValue >= 2) from accumulate(
+			PotentialDamage($t:this, damageType == PotentialDamageType.Hearth) from $potentialDamages,
+			count($t)
+		)
+		eval(!$patient.getSymptoms().contains(SymptomType.Arrhythmia))
+		eval(!$patient.getSymptoms().contains(SymptomType.Dizziness))
+	then
+		$patient.addSymptom(SymptomType.Arrhythmia);
+		$patient.addSymptom(SymptomType.Dizziness);
+	end
+	
+	
+rule "A - Droolitis phase 5 symptoms"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 5 ) from $patient.illness
+		eval(!$patient.getSymptoms().contains(SymptomType.CardiacArrest))
+	then
+		PotentialSymptom potentialSymptom = new PotentialSymptom();
+		potentialSymptom.setSymptom(SymptomType.CardiacArrest);
+		insert(potentialSymptom);
+	end
 	
 	
 rule "A - Droolitis phase 7 symptoms"
@@ -108,6 +160,7 @@ rule "A - Droolitis phase 7 symptoms"
 		eval(!$patient.getSymptoms().contains(SymptomType.ChestPain))
 	then
 		$patient.addSymptom(SymptomType.ChestPain);
+		$patient.getPatientState().getBloodParameters().setLeukocytes(20f);
 		update($patient)
 	end
 	
@@ -131,59 +184,26 @@ rule "B - Therapy Mitomicin"
 		$patient.getTherapies().add($therapy);
 	end
 	
-rule "B - Leukocytes lab examination before phase 3"
-	when 
-		$examination : Examination(examinationType == ExaminationType.Leukocytes)
-		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase < 3 ) from $patient.illness
-	then
-		$examination.getResults().add("slightly increased");
-		$examination.setResultValue(8f);
-		$patient.getExaminations().add($examination);
-	end
-	
-rule "B - Leukocytes lab examination in phase 3"
-	when 
-		$examination : Examination(examinationType == ExaminationType.Leukocytes)
-		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
-	then
-		$examination.getResults().add("increased white blood cells");
-		$examination.setResultValue(20f);
-		$patient.getExaminations().add($examination);
-	end
-	
-rule "B - MRI Examination"
-	when 
-		$examination : Examination(examinationType == ExaminationType.MRI)
-		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
-	then
-		$examination.getResults().add("multiple masses");
-		$examination.getResults().add("damaged lungs");
-		$patient.getExaminations().add($examination);
-	end
-
-// ovde ubaciti potencijalno gusenje ukoliko jos nesto utice na pluca pacijenta iz life facts
-rule "B - Spirometry Examination"
-	when 
-		$examination : Examination(examinationType == ExaminationType.Spirometry)
-		$patient : Patient(patientState.getOxygenSaturation() < 0.95)
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
-	then
-		$examination.getResults().add("lower lung capacity");
-		$patient.getExaminations().add($examination);
-		
-		// insert potential symptom = due lung pressure masses can burst and patient can start caughing blood
-		PotentialSymptom potentialSymptom = new PotentialSymptom();
-		potentialSymptom.setSymptom(SymptomType.CaughingBlood);
-		insert(potentialSymptom);
-	end
-	
 
 declare PotentialSymptom
 	symptom: SymptomType
 end
+
+rule "D - Potential cardiac arrest"
+	when 
+		$patient : Patient($potentialDamages: potentialDamages)
+		$potentialSymptom : PotentialSymptom(symptom == SymptomType.CardiacArrest)
+		Number($value: intValue >= 2) from accumulate(
+			PotentialDamage($t:this, damageType == PotentialDamageType.Hearth) from $potentialDamages,
+			count($t)
+		)
+	then
+		DangerousPatientSituation dangerousSituation = new DangerousPatientSituation(SymptomType.CardiacArrest);
+		$patient.getDangerousPatientSituations().add(dangerousSituation);
+		$patient.setCurrentDangerousSituation(dangerousSituation);
+		$patient.addSymptom(SymptomType.CardiacArrest);
+	end
+		
 
 rule "D - Potential symptom caughing blood from lung damage"
 	when 
@@ -282,5 +302,17 @@ rule "Intubation procedure for respiratory failure"
 		$patient.removeDangerousSituation(SymptomType.LungsStopped);
 		$patient.setCurrentDangerousSituation(null);
 		$patient.removeDangerousSituationEvents(SymptomType.LungsStopped);
+	end
+	
+rule "Defibrilator procedure for cardiac arrest"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CardiacArrest) from $patient.dangerousPatientSituations
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$procedure: MedicalProcedure(procedureType == MedicalProcedureType.Defibrillation)
+	then
+		$patient.removeDangerousSituation(SymptomType.CardiacArrest);
+		$patient.setCurrentDangerousSituation(null);
+		$patient.removeDangerousSituationEvents(SymptomType.CardiacArrest);
 	end
 	

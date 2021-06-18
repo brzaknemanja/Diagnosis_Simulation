@@ -5,4 +5,5 @@ public enum FactType {
 	Drugs,
 	Alcoholism,
 	Running,
+	UnhealthyLifestyle
 }

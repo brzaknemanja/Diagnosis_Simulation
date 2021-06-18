@@ -34,4 +34,26 @@ rule "C - Lung damage from smoking"
 		$patient.getPotentialDamages().add(new PotentialDamage(PotentialDamageType.Lungs));
 	end
 	
+rule "C - Hearth, Liver damage from alcoholism"
+	agenda-group "illness-init"
+	when
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$fact: PatientLifeFact(factType == FactType.Alcoholism) from $patient.lifeFacts
+		eval($fact.getDurationYears() >= 1)
+	then
+		$patient.getPotentialDamages().add(new PotentialDamage(PotentialDamageType.Hearth));
+		$patient.getPotentialDamages().add(new PotentialDamage(PotentialDamageType.Liver));
+	end
 	
+rule "C - Hearth damage from unhealthy lifestyle"
+	agenda-group "illness-init"
+	when
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$fact: PatientLifeFact(factType == FactType.UnhealthyLifestyle) from $patient.lifeFacts
+		eval($fact.getDurationYears() >= 1)
+	then
+		$patient.getPotentialDamages().add(new PotentialDamage(PotentialDamageType.Hearth));
+		$patient.getPatientState().getBloodParameters().setCholesterol(8f);
+	end

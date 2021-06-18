@@ -56,6 +56,9 @@ public enum SymptomType
 	ShortnessBreath,
 	ChestPain,
 	LungsStopped,
+	CardiacArrest,
+	Arrhythmia,
+	Dizziness
 }
 
 public enum Gender
@@ -69,7 +72,8 @@ public enum ExaminationType
 	CT,
 	MRI,
 	Spirometry,
-	Leukocytes
+	Leukocytes,
+	Cholesterol
 }
 
 public enum PatientHealthState

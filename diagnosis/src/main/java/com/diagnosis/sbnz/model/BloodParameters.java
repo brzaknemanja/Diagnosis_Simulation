@@ -4,10 +4,12 @@ public class BloodParameters {
 	
 	float hemoglobin;
 	float leukocytes;
+	float cholesterol;
 		
 	public BloodParameters() {
 		this.hemoglobin = 120;
 		this.leukocytes = 6;
+		this.cholesterol = 4;
 	}
 	public float getHemoglobin() {
 		return hemoglobin;
@@ -21,4 +23,12 @@ public class BloodParameters {
 	public void setLeukocytes(float leukocytes) {
 		this.leukocytes = leukocytes;
 	}
+	public float getCholesterol() {
+		return cholesterol;
+	}
+	public void setCholesterol(float cholesterol) {
+		this.cholesterol = cholesterol;
+	}
+	
+	
 }
