@@ -109,6 +109,8 @@ rule "A - Droolitis phase 2 symptoms"
 		eval(!$patient.getSymptoms().contains(SymptomType.ShortnessBreath))
 	then
 		$patient.addSymptom(SymptomType.ShortnessBreath);
+		$patient.getPatientState().setSystolicPressure(145);	
+		$patient.getPatientState().setDiastolicPressure(100);
 		update($patient)
 	end
 	
@@ -136,8 +138,8 @@ rule "A - Droolitis phase 3 symptoms hearth damaged"
 	then
 		$patient.addSymptom(SymptomType.Arrhythmia);
 		$patient.addSymptom(SymptomType.Dizziness);
+		$patient.getPatientState().setPulse(100f);	
 	end
-	
 	
 rule "A - Droolitis phase 5 symptoms"
 	lock-on-active
@@ -151,7 +153,7 @@ rule "A - Droolitis phase 5 symptoms"
 		insert(potentialSymptom);
 	end
 	
-	
+		
 rule "A - Droolitis phase 7 symptoms"
 	lock-on-active
 	when 
@@ -180,7 +182,9 @@ rule "B - Therapy Mitomicin"
 		$patient : Patient()
 		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase < 8 ) from $patient.illness
 	then
-		$patient.setCurrentPatientHealthState(PatientHealthState.Dead);
+		PotentialSymptom potentialSymptom = new PotentialSymptom();
+		potentialSymptom.setSymptom(SymptomType.LiverFailure);
+		insert(potentialSymptom);
 		$patient.getTherapies().add($therapy);
 	end
 	
@@ -219,19 +223,80 @@ rule "D - Potential symptom caughing blood from lung damage"
 		$patient.setCurrentDangerousSituation(dangerousSituation);
 	end
 	
-rule "Suction procedure for caughing blood"
-	when
-		$patient : Patient()
-		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
-		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
-		$procedure: MedicalProcedure(procedureType == MedicalProcedureType.Suction)
+rule "D - Potential symptom liver failure from mitomicin therapy"
+	when 
+		$patient : Patient($potentialDamages: potentialDamages)
+		$potentialSymptom : PotentialSymptom(symptom == SymptomType.LiverFailure)
+		Number($value: intValue >= 1) from accumulate(
+			PotentialDamage($t:this, damageType == PotentialDamageType.Liver) from $potentialDamages,
+			count($t)
+		)
 	then
-		$patient.removeDangerousSituation(SymptomType.CaughingBlood);
-		$patient.setCurrentDangerousSituation(null);
-		$patient.removeDangerousSituationEvents(SymptomType.CaughingBlood);
+		DangerousPatientSituation dangerousSituation = new DangerousPatientSituation(SymptomType.LiverFailure);
+		$patient.getDangerousPatientSituations().add(dangerousSituation);
+		$patient.setCurrentDangerousSituation(dangerousSituation);
 	end
 
+	
+	
+// events
+rule "Event - raise dangerous event for liver failure"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LiverFailure) from $patient.dangerousPatientSituations
+	then
+		$patient.getDangerousSituationEvents().add(new DangerousSituationEvent($dangerousSituation.getDangerousSymptom()));
+	end
+	
+rule "Event - react to dangerous event for liver failure"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LiverFailure) from $patient.dangerousPatientSituations
+		$d1: DangerousSituationEvent(symptom == SymptomType.LiverFailure, $eventSymptom: symptom) from $patient.dangerousSituationEvents
+		Number(intValue >= 6) from accumulate(
+            $d2: DangerousSituationEvent(
+                this != $d1, 
+                symptom == $eventSymptom, 
+                this meets[1m] $d1
+            ) from $patient.dangerousSituationEvents,
+            count($d2)
+        )
+    	eval($patient.getCurrentPatientHealthState() != PatientHealthState.Dead)
+    then
+    	$patient.setCurrentPatientHealthState(PatientHealthState.Dead);
+    	$patient.setCurrentDangerousSituation(null);
+    end
 
+
+
+rule "Event - raise dangerous event for cardiac arrest"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CardiacArrest) from $patient.dangerousPatientSituations
+	then
+		$patient.getDangerousSituationEvents().add(new DangerousSituationEvent($dangerousSituation.getDangerousSymptom()));
+	end
+	
+rule "Event - react to dangerous event for cardiac arrest"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CardiacArrest) from $patient.dangerousPatientSituations
+		$d1: DangerousSituationEvent(symptom == SymptomType.CardiacArrest, $eventSymptom: symptom) from $patient.dangerousSituationEvents
+		Number(intValue >= 6) from accumulate(
+            $d2: DangerousSituationEvent(
+                this != $d1, 
+                symptom == $eventSymptom, 
+                this meets[1m] $d1
+            ) from $patient.dangerousSituationEvents,
+            count($d2)
+        )
+    	eval($patient.getCurrentPatientHealthState() != PatientHealthState.Dead)
+    then
+    	$patient.setCurrentPatientHealthState(PatientHealthState.Dead);
+    	$patient.setCurrentDangerousSituation(null);
+    end
+
+	
 rule "Event - raise dangerous event for caughing blood"
 	when
 		$patient : Patient()
@@ -292,6 +357,9 @@ rule "Event - react to dangerous event for lungs stopped"
     	$patient.setCurrentDangerousSituation(null);
     end
     
+
+// Procedures
+    
 rule "Intubation procedure for respiratory failure"
 	when
 		$patient : Patient()
@@ -314,5 +382,29 @@ rule "Defibrilator procedure for cardiac arrest"
 		$patient.removeDangerousSituation(SymptomType.CardiacArrest);
 		$patient.setCurrentDangerousSituation(null);
 		$patient.removeDangerousSituationEvents(SymptomType.CardiacArrest);
+	end
+	
+rule "Suction procedure for caughing blood"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$procedure: MedicalProcedure(procedureType == MedicalProcedureType.Suction)
+	then
+		$patient.removeDangerousSituation(SymptomType.CaughingBlood);
+		$patient.setCurrentDangerousSituation(null);
+		$patient.removeDangerousSituationEvents(SymptomType.CaughingBlood);
+	end
+	
+rule "Liver transplant for liver failure"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LiverFailure) from $patient.dangerousPatientSituations
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$procedure: MedicalProcedure(procedureType == MedicalProcedureType.LiverTransplant)
+	then
+		$patient.removeDangerousSituation(SymptomType.LiverFailure);
+		$patient.setCurrentDangerousSituation(null);
+		$patient.removeDangerousSituationEvents(SymptomType.LiverFailure);
 	end
 	

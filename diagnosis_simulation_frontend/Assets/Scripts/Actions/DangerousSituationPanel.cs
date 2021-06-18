@@ -57,6 +57,10 @@ public class DangerousSituationPanel : MonoBehaviour
                 return "Patient is caughing blood!";
             case SymptomType.LungsStopped:
                 return "Patient lungs have stopped!";
+            case SymptomType.CardiacArrest:
+                return "Patient hearth has stopped!";
+            case SymptomType.LiverFailure:
+                return "Patient liver is completely damaged!";
             default:
                 return "Patient is in danger!";
         }

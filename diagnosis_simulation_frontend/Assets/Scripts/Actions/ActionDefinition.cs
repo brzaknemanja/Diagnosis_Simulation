@@ -72,6 +72,8 @@ public class ActionDefinition
             ActionType.Procedure, "Defibrillation"),
         new ActionDefinition("Intubation", "Intubation is a procedure that's used when you can't breathe on your own. Your doctor puts a tube down your throat and into your windpipe to make it easier to get air into and out of your lungs.",
             ActionType.Procedure, "Intubation"),
+        new ActionDefinition("Liver Transplant", "A liver transplant is a surgical procedure that removes a liver that no longer functions properly (liver failure) and replaces it with a healthy liver from a deceased donor or a portion of a healthy liver from a living donor.",
+            ActionType.Procedure, "LiverTransplant"),
     };
 
     public static Dictionary<ActionType, List<ActionDefinition>> actionDefinitions = new Dictionary<ActionType, List<ActionDefinition>>()

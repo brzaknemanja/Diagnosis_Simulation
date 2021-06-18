@@ -58,7 +58,8 @@ public enum SymptomType
 	LungsStopped,
 	CardiacArrest,
 	Arrhythmia,
-	Dizziness
+	Dizziness,
+	LiverFailure
 }
 
 public enum Gender
