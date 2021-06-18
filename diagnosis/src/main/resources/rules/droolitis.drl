@@ -208,6 +208,7 @@ rule "Suction procedure for caughing blood"
 	then
 		$patient.removeDangerousSituation(SymptomType.CaughingBlood);
 		$patient.setCurrentDangerousSituation(null);
+		$patient.removeDangerousSituationEvents(SymptomType.CaughingBlood);
 	end
 
 
@@ -228,7 +229,7 @@ rule "Event - react to dangerous event for caughing blood"
             $d2: DangerousSituationEvent(
                 this != $d1, 
                 symptom == $eventSymptom, 
-                this meets[1m] $d1
+                this meets[20s] $d1
             ) from $patient.dangerousSituationEvents,
             count($d2)
         )
@@ -239,7 +240,8 @@ rule "Event - react to dangerous event for caughing blood"
     	{
     		getDangerousPatientSituations().add(dangerousSituation),
     		setCurrentDangerousSituation(dangerousSituation),
-    		removeDangerousSituation(SymptomType.CaughingBlood)
+    		removeDangerousSituation(SymptomType.CaughingBlood),
+    		removeDangerousSituationEvents(SymptomType.CaughingBlood)
     	}
     end
     
@@ -279,5 +281,6 @@ rule "Intubation procedure for respiratory failure"
 	then
 		$patient.removeDangerousSituation(SymptomType.LungsStopped);
 		$patient.setCurrentDangerousSituation(null);
+		$patient.removeDangerousSituationEvents(SymptomType.LungsStopped);
 	end
 	

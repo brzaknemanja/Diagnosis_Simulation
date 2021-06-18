@@ -28,7 +28,8 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
         if (onPatientDataRefreshed != null)
             onPatientDataRefreshed.Invoke();
 
-        Invoke("OnSimulateClick", 3f);
+        StopCoroutine(refreshCoroutine());
+        StartCoroutine(refreshCoroutine());
     }
 
     public void OnSimulateClick()
@@ -47,8 +48,15 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 
         if (onPatientHealthStateUpdate != null)
             onPatientHealthStateUpdate.Invoke();
+    }
 
-        Invoke("OnSimulateClick", 3f);
+    IEnumerator refreshCoroutine()
+    {
+        while (patientData.currentPatientHealthState != PatientHealthState.Dead)
+        {
+            yield return new WaitForSeconds(3);
+            OnSimulateClick();
+        }
     }
 
     private void Update()

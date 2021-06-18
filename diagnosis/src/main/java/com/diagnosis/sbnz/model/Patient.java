@@ -127,6 +127,10 @@ public class Patient {
 		this.dangerousPatientSituations.removeIf(x -> x.dangerousSymptom == symptomType);
 	}
 	
+	public void removeDangerousSituationEvents(SymptomType symptomType) {
+		this.dangerousSituationEvents.removeIf(x -> x.getSymptom() == symptomType);
+	}
+	
 	public void IncreaseIllnessProgressionCoefficient(float value) {
 		this.illnessProgressionCoefficient += value;
 	}
