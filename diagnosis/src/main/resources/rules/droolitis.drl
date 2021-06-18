@@ -20,12 +20,56 @@ import com.diagnosis.sbnz.model.enums.MedicalProcedureType
 
 import com.diagnosis.sbnz.events.DangerousSituationEvent
 
-
-rule "A - Droolitis phase 1"
+rule "Droolitis illness progression phase 2"
 	lock-on-active
 	when 
 		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 1 ) from $patient.illness
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 1) from $patient.illness
+		eval($patient.getIllnessProgressionCoefficient() >= 3)
+	then
+		$patient.getIllness().increaseIllnessPhase();
+		update($patient)
+	end
+	
+rule "Droolitis illness progression phase 3"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 2) from $patient.illness
+		eval($patient.getIllnessProgressionCoefficient() >= 5)
+	then
+		$patient.getIllness().increaseIllnessPhase();
+		update($patient)
+	end
+	
+rule "Droolitis illness progression phase 4"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 3) from $patient.illness
+		eval($patient.getIllnessProgressionCoefficient() >= 10)
+	then
+		$patient.getIllness().increaseIllnessPhase();
+		update($patient)
+	end
+	
+rule "Droolitis illness progression phase 5"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 4) from $patient.illness
+		eval($patient.getIllnessProgressionCoefficient() >= 14)
+	then
+		$patient.getIllness().increaseIllnessPhase();
+		update($patient)
+	end
+
+
+rule "A - Droolitis phase 1 symptoms"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 1 ) from $patient.illness
 		eval(!$patient.getSymptoms().contains(SymptomType.Tiredness))
 		eval(!$patient.getSymptoms().contains(SymptomType.Caughing))
 	then
@@ -34,43 +78,33 @@ rule "A - Droolitis phase 1"
 		update($patient)
 	end
 		
-rule "A - Droolitis phase 2"
+rule "A - Droolitis phase 2 symptoms"
 	lock-on-active
 	when 
 		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 2 ) from $patient.illness
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 2 ) from $patient.illness
 		eval(!$patient.getSymptoms().contains(SymptomType.ShortnessBreath))
 	then
 		$patient.addSymptom(SymptomType.ShortnessBreath);
 		update($patient)
 	end
 	
-rule "A - Droolitis phase 3"
+rule "A - Droolitis phase 3 symptoms"
 	lock-on-active
 	when 
 		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 3 ) from $patient.illness
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
 	then
 		$patient.getPatientState().setOxygenSaturation(0.85f);	
 		update($patient)
 	end
 	
-rule "A - Droolitis phase 5"
-	lock-on-active
-	when 
-		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 5 ) from $patient.illness
-		eval(!$patient.getSymptoms().contains(SymptomType.CaughingBlood))
-	then
-		$patient.addSymptom(SymptomType.CaughingBlood);
-		update($patient)
-	end
 	
-rule "A - Droolitis phase 7"
+rule "A - Droolitis phase 7 symptoms"
 	lock-on-active
 	when 
 		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 7 ) from $patient.illness
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 5 ) from $patient.illness
 		eval(!$patient.getSymptoms().contains(SymptomType.ChestPain))
 	then
 		$patient.addSymptom(SymptomType.ChestPain);
@@ -181,7 +215,6 @@ rule "Event - raise dangerous event for caughing blood"
 	when
 		$patient : Patient()
 		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
-		not(DangerousPatientSituation(dangerousSymptom == SymptomType.LungsStopped) from $patient.dangerousPatientSituations)
 	then
 		$patient.getDangerousSituationEvents().add(new DangerousSituationEvent($dangerousSituation.getDangerousSymptom()));
 	end
@@ -190,8 +223,8 @@ rule "Event - react to dangerous event for caughing blood"
 	when
 		$patient : Patient()
 		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.CaughingBlood) from $patient.dangerousPatientSituations
-		$d1: DangerousSituationEvent($eventSymptom: symptom) from $patient.dangerousSituationEvents
-		Number(intValue >= 2) from accumulate(
+		$d1: DangerousSituationEvent(symptom ==SymptomType.CaughingBlood, $eventSymptom: symptom) from $patient.dangerousSituationEvents
+		Number(intValue >= 6) from accumulate(
             $d2: DangerousSituationEvent(
                 this != $d1, 
                 symptom == $eventSymptom, 
@@ -205,8 +238,36 @@ rule "Event - react to dangerous event for caughing blood"
     	modify($patient).
     	{
     		getDangerousPatientSituations().add(dangerousSituation),
-    		setCurrentDangerousSituation(dangerousSituation)
+    		setCurrentDangerousSituation(dangerousSituation),
+    		removeDangerousSituation(SymptomType.CaughingBlood)
     	}
+    end
+    
+rule "Event - raise dangerous event for lungs stopped"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LungsStopped) from $patient.dangerousPatientSituations
+	then
+		$patient.getDangerousSituationEvents().add(new DangerousSituationEvent($dangerousSituation.getDangerousSymptom()));
+	end
+    
+rule "Event - react to dangerous event for lungs stopped"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LungsStopped) from $patient.dangerousPatientSituations
+		$d1: DangerousSituationEvent(symptom ==SymptomType.LungsStopped, $eventSymptom: symptom) from $patient.dangerousSituationEvents
+		Number(intValue >= 6) from accumulate(
+            $d2: DangerousSituationEvent(
+                this != $d1, 
+                symptom == $eventSymptom, 
+                this meets[1m] $d1
+            ) from $patient.dangerousSituationEvents,
+            count($d2)
+        )
+    	eval($patient.getCurrentPatientHealthState() != PatientHealthState.Dead)
+    then
+    	$patient.setCurrentPatientHealthState(PatientHealthState.Dead);
+    	$patient.setCurrentDangerousSituation(null);
     end
     
 rule "Intubation procedure for respiratory failure"

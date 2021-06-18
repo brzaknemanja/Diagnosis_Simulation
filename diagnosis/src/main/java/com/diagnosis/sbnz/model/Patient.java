@@ -30,6 +30,7 @@ public class Patient {
 	List<DangerousSituationEvent> dangerousSituationEvents;
 	PatientHealthState currentPatientHealthState;
 	DangerousPatientSituation currentDangerousSituation;
+	float illnessProgressionCoefficient;
 	
 	public Patient() {
 		this.lifeFacts = new ArrayList<PatientLifeFact>();
@@ -124,6 +125,14 @@ public class Patient {
 	
 	public void removeDangerousSituation(SymptomType symptomType) {
 		this.dangerousPatientSituations.removeIf(x -> x.dangerousSymptom == symptomType);
+	}
+	
+	public void IncreaseIllnessProgressionCoefficient(float value) {
+		this.illnessProgressionCoefficient += value;
+	}
+	
+	public float getIllnessProgressionCoefficient() {
+		return illnessProgressionCoefficient;
 	}
 
 	public static Patient CreateDefaultPatient(IllnessType illnessType) {

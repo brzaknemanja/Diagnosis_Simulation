@@ -27,6 +27,8 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 
         if (onPatientDataRefreshed != null)
             onPatientDataRefreshed.Invoke();
+
+        Invoke("OnSimulateClick", 3f);
     }
 
     public void OnSimulateClick()
@@ -45,6 +47,8 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 
         if (onPatientHealthStateUpdate != null)
             onPatientHealthStateUpdate.Invoke();
+
+        Invoke("OnSimulateClick", 3f);
     }
 
     private void Update()

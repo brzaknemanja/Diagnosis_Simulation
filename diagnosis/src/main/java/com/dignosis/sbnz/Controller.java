@@ -62,7 +62,7 @@ public class Controller {
 		if (this.patient == null)
 			return null;
 		
-		this.patient.getIllness().increaseIllnessPhase();
+		this.patient.IncreaseIllnessProgressionCoefficient(1);
 		
 		KieSession kieSession = kieContainer.newKieSession("rulesSession");
 		kieSession.insert(this.patient);
