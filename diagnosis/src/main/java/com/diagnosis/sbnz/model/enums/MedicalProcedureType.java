@@ -4,5 +4,6 @@ public enum MedicalProcedureType {
 	Suction,
 	Defibrillation,
 	Intubation,
-	LiverTransplant
+	LiverTransplant,
+	LungsTransplant
 }

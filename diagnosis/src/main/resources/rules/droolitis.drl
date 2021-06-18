@@ -85,6 +85,17 @@ rule "Droolitis illness progression phase 7"
 		$patient.getIllness().increaseIllnessPhase();
 		update($patient)
 	end
+	
+rule "Droolitis illness progression phase 8"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 7) from $patient.illness
+		eval($patient.getIllnessProgressionCoefficient() >= 28)
+	then
+		$patient.getIllness().increaseIllnessPhase();
+		update($patient)
+	end
 
 
 rule "A - Droolitis phase 1 symptoms"
@@ -154,16 +165,30 @@ rule "A - Droolitis phase 5 symptoms"
 	end
 	
 		
-rule "A - Droolitis phase 7 symptoms"
+rule "A - Droolitis phase 6 symptoms"
 	lock-on-active
 	when 
 		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 5 ) from $patient.illness
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 6 ) from $patient.illness
 		eval(!$patient.getSymptoms().contains(SymptomType.ChestPain))
 	then
 		$patient.addSymptom(SymptomType.ChestPain);
 		$patient.getPatientState().getBloodParameters().setLeukocytes(20f);
 		update($patient)
+	end
+	
+rule "A - Droolitis phase 7 symptoms"
+	lock-on-active
+	when 
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 7 ) from $patient.illness
+		eval(!$patient.getSymptoms().contains(SymptomType.LungsFailure))
+		not(DangerousPatientSituation(dangerousSymptom == SymptomType.LungsFailure) from $patient.dangerousPatientSituations)
+	then
+		DangerousPatientSituation dangerousSituation = new DangerousPatientSituation(SymptomType.LungsFailure);
+		$patient.getDangerousPatientSituations().add(dangerousSituation);
+		$patient.setCurrentDangerousSituation(dangerousSituation);
+		$patient.addSymptom(SymptomType.LungsFailure);
 	end
 	
 rule "B - Therapy Drooliticin"
@@ -240,6 +265,34 @@ rule "D - Potential symptom liver failure from mitomicin therapy"
 	
 	
 // events
+rule "Event - raise dangerous event for lungs failure"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LungsFailure) from $patient.dangerousPatientSituations
+	then
+		$patient.getDangerousSituationEvents().add(new DangerousSituationEvent($dangerousSituation.getDangerousSymptom()));
+	end
+	
+rule "Event - react to dangerous event for lungs failure"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LungsFailure) from $patient.dangerousPatientSituations
+		$d1: DangerousSituationEvent(symptom == SymptomType.LungsFailure, $eventSymptom: symptom) from $patient.dangerousSituationEvents
+		Number(intValue >= 6) from accumulate(
+            $d2: DangerousSituationEvent(
+                this != $d1, 
+                symptom == $eventSymptom, 
+                this meets[1m] $d1
+            ) from $patient.dangerousSituationEvents,
+            count($d2)
+        )
+    	eval($patient.getCurrentPatientHealthState() != PatientHealthState.Dead)
+    then
+    	$patient.setCurrentPatientHealthState(PatientHealthState.Dead);
+    	$patient.setCurrentDangerousSituation(null);
+    end
+
+
 rule "Event - raise dangerous event for liver failure"
 	when
 		$patient : Patient()
@@ -406,5 +459,17 @@ rule "Liver transplant for liver failure"
 		$patient.removeDangerousSituation(SymptomType.LiverFailure);
 		$patient.setCurrentDangerousSituation(null);
 		$patient.removeDangerousSituationEvents(SymptomType.LiverFailure);
+	end
+	
+rule "Lungs transplant for lung failure"
+	when
+		$patient : Patient()
+		$dangerousSituation : DangerousPatientSituation(dangerousSymptom == SymptomType.LungsFailure) from $patient.dangerousPatientSituations
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+		$procedure: MedicalProcedure(procedureType == MedicalProcedureType.LungsTransplant)
+	then
+		$patient.removeDangerousSituation(SymptomType.LungsFailure);
+		$patient.setCurrentDangerousSituation(null);
+		$patient.removeDangerousSituationEvents(SymptomType.LungsFailure);
 	end
 	

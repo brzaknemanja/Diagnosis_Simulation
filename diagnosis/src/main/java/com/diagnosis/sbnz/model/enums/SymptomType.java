@@ -13,5 +13,6 @@ public enum SymptomType {
 	CardiacArrest,
 	Arrhythmia,
 	Dizziness,
-	LiverFailure
+	LiverFailure,
+	LungsFailure
 }

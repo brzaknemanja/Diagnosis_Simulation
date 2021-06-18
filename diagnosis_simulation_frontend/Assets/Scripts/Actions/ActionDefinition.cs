@@ -74,6 +74,8 @@ public class ActionDefinition
             ActionType.Procedure, "Intubation"),
         new ActionDefinition("Liver Transplant", "A liver transplant is a surgical procedure that removes a liver that no longer functions properly (liver failure) and replaces it with a healthy liver from a deceased donor or a portion of a healthy liver from a living donor.",
             ActionType.Procedure, "LiverTransplant"),
+        new ActionDefinition("Lungs Transplant", "A lung transplant is a surgical procedure to replace a diseased or failing lung with a healthy lung, usually from a deceased donor.",
+            ActionType.Procedure, "LungsTransplant"),
     };
 
     public static Dictionary<ActionType, List<ActionDefinition>> actionDefinitions = new Dictionary<ActionType, List<ActionDefinition>>()

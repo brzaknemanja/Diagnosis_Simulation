@@ -61,6 +61,8 @@ public class DangerousSituationPanel : MonoBehaviour
                 return "Patient hearth has stopped!";
             case SymptomType.LiverFailure:
                 return "Patient liver is completely damaged!";
+            case SymptomType.LungsFailure:
+                return "Patient lungs are completely damaged!";
             default:
                 return "Patient is in danger!";
         }
