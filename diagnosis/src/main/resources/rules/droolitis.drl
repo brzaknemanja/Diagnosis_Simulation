@@ -195,7 +195,7 @@ rule "B - Therapy Drooliticin"
 	when 
 		$therapy : Therapy(therapyType == TherapyType.Drooliticin)
 		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase < 8 ) from $patient.illness
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
 	then
 		$patient.setCurrentPatientHealthState(PatientHealthState.Cured);
 		$patient.getTherapies().add($therapy);
