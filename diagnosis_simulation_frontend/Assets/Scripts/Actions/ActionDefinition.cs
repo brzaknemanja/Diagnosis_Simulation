@@ -44,8 +44,12 @@ public class ActionDefinition
     {
         new ActionDefinition("Spirometry", "Spirometry is a common office test used to assess how well your lungs work by measuring how much air you inhale, how much you exhale and how quickly you exhale. Spirometry is used to diagnose asthma, chronic obstructive pulmonary disease (COPD) and other conditions that affect breathing.Aug",
             ActionType.Examination, "Spirometry"),
-        new ActionDefinition("MRI", "Magnet magnet and lots of magnets",
+        new ActionDefinition("MRI", "Magnetic resonance imaging (MRI) is a medical imaging technique that uses a magnetic field and computer-generated radio waves to create detailed images of the organs and tissues in your body.",
             ActionType.Examination, "MRI"),
+        new ActionDefinition("CT", "A computerized tomography (CT) scan combines a series of X-ray images taken from different angles around your body and uses computer processing to create cross-sectional images (slices) of the bones, blood vessels and soft tissues inside your body.",
+            ActionType.Examination, "CT"),
+        new ActionDefinition("Lungs Biopsy", "Magnet magnet and lots of magnets",
+            ActionType.Examination, "LungBiopsy"),
     };
 
     public static List<ActionDefinition> labTestsDefinitions = new List<ActionDefinition>()

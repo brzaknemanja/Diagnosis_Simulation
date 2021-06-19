@@ -5,5 +5,6 @@ public enum ExaminationType {
 	MRI,
 	Spirometry,
 	Leukocytes,
-	Cholesterol
+	Cholesterol,
+	LungBiopsy
 }

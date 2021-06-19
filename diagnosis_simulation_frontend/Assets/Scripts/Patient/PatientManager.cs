@@ -54,7 +54,7 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
     {
         while (patientData.currentPatientHealthState == PatientHealthState.Diagnosing)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(3);
             OnSimulateClick();
         }
 

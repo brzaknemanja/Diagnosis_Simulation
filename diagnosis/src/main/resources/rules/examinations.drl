@@ -76,9 +76,9 @@ rule "B - MRI Examination"
 	when 
 		$examination : Examination(examinationType == ExaminationType.MRI)
 		$patient : Patient()
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
 	then
-		$examination.getResults().add("multiple masses");
+		$examination.getResults().add("multiple masses in lungs");
 		$examination.getResults().add("damaged lungs");
 		$patient.getExaminations().add($examination);
 	end
@@ -87,7 +87,7 @@ rule "B - Spirometry Examination"
 	when 
 		$examination : Examination(examinationType == ExaminationType.Spirometry)
 		$patient : Patient(patientState.getOxygenSaturation() < 0.95)
-		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase >= 3 ) from $patient.illness
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
 	then
 		$examination.getResults().add("lower lung capacity");
 		$patient.getExaminations().add($examination);
@@ -96,4 +96,25 @@ rule "B - Spirometry Examination"
 		PotentialSymptom potentialSymptom = new PotentialSymptom();
 		potentialSymptom.setSymptom(SymptomType.CaughingBlood);
 		insert(potentialSymptom);
+	end
+	
+rule "B - Lungs Biopsy examination"
+	when 
+		$examination : Examination(examinationType == ExaminationType.LungBiopsy)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+	then
+		$examination.getResults().add("non carcinogenic masses");
+		$examination.getResults().add("solid bloody mass");
+		$patient.getExaminations().add($examination);
+	end
+	
+rule "B - CT scan"
+	when 
+		$examination : Examination(examinationType == ExaminationType.CT)
+		$patient : Patient()
+		$illness: Illness(illnessType == IllnessType.Droolitis) from $patient.illness
+	then
+		$examination.getResults().add("multiple lung shadows");
+		$patient.getExaminations().add($examination);
 	end
