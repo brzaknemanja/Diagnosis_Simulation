@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class FinishedDiagnosisUIPanel : MonoBehaviour
@@ -33,7 +34,7 @@ public class FinishedDiagnosisUIPanel : MonoBehaviour
 
     public void OnContinueClick()
     {
-
+        SceneManager.LoadScene("StartScene");
     }
 
     private void OnEnable()

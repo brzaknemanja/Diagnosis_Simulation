@@ -53,9 +53,4 @@ public class PatientStateUIController : MonoBehaviour
         PatientManager.Instance.onPatientDataRefreshed += RefreshPatientState;
     }
 
-    private void OnDisable()
-    {
-        PatientManager.Instance.onPatientDataRefreshed -= RefreshPatientState;
-    }
-
 }

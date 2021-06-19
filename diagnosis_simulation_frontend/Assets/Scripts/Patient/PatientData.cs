@@ -17,6 +17,8 @@ public class PatientData
 	public SymptomType currentDangerousSituation;
 
 	public Examination lastExamination;
+
+	public static int patientIndex = -1;
 }
 
 [Serializable]

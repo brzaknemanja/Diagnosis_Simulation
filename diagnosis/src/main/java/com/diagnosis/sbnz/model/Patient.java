@@ -138,8 +138,46 @@ public class Patient {
 	public float getIllnessProgressionCoefficient() {
 		return illnessProgressionCoefficient;
 	}
+	
+	public static Patient CreatePatient(int index) {
+		switch(index) {
+			case 1:
+				return CreatePatient1();
+			case 2:
+				return CreatePatient2();
+			case 3:
+				return CreatePatient3();
+			default:
+				return CreatePatient3();
+		}		
+	}
+	
+	public static Patient CreatePatient1() {
+		Patient patient = new Patient();
+		patient.setAge(28);
+		patient.setHeight(165);
+		patient.setWeight(60);
+		patient.setGender(Gender.FEMALE);
+		patient.setCurrentPatientHealthState(PatientHealthState.Diagnosing);
+		patient.setPatientState(new PatientState());
+		
+		Illness illness = new Illness();
+		illness.setIllnessType(IllnessType.Droolitis);
+		illness.illnessPhase = 1;
+		patient.setIllness(illness);
+		
+		// healthy lifestyle
+		PatientLifeFact fact1 = new PatientLifeFact();
+		fact1.setFactType(FactType.HealthyLifestyle);
+		fact1.setStart(Date.from(LocalDate.now().minusYears(3).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		fact1.setEnd(new Date());
+				
+		patient.getLifeFacts().add(fact1);
+			
+		return patient;
+	}
 
-	public static Patient CreateDefaultPatient(IllnessType illnessType) {
+	public static Patient CreatePatient2() {
 		Patient patient = new Patient();
 		patient.setAge(26);
 		patient.setHeight(182);
@@ -149,7 +187,7 @@ public class Patient {
 		patient.setPatientState(new PatientState());
 		
 		Illness illness = new Illness();
-		illness.setIllnessType(illnessType);
+		illness.setIllnessType(IllnessType.Droolitis);
 		illness.illnessPhase = 1;
 		patient.setIllness(illness);
 		
@@ -171,7 +209,7 @@ public class Patient {
 		return patient;
 	}
 	
-	public static Patient CreatePatient2() {
+	public static Patient CreatePatient3() {
 		Patient patient = new Patient();
 		patient.setAge(50);
 		patient.setHeight(170);

@@ -13,7 +13,7 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 
     private void Start()
     {
-        RestApi.Instance.GetRequest("localhost:8080/initialize?illnessType=Droolitis", OnInitSucces, null);
+        RestApi.Instance.GetRequest("localhost:8080/initialize?index=" + PatientData.patientIndex, OnInitSucces, null);
     }
 
     private void OnInitSucces(string data)
@@ -52,11 +52,18 @@ public class PatientManager : MonobehaviourSingleton<PatientManager>
 
     IEnumerator refreshCoroutine()
     {
-        while (patientData.currentPatientHealthState != PatientHealthState.Dead)
+        while (patientData.currentPatientHealthState == PatientHealthState.Diagnosing)
         {
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(1);
             OnSimulateClick();
         }
+
+        yield return null;
+    }
+
+    private void OnDisable()
+    {
+        StopCoroutine(refreshCoroutine());
     }
 
     private void Update()

@@ -29,10 +29,9 @@ public class Controller {
 	Patient patient;
 	
 	@GetMapping(value="initialize")
-	public PatientDto initializeIllness(@RequestParam IllnessType illnessType) {
+	public PatientDto initializeIllness(@RequestParam int index) {
 		
-		if (this.patient == null)
-			this.patient = Patient.CreateDefaultPatient(illnessType);
+		this.patient = Patient.CreatePatient(index);
 		
 		KieSession kieSession = kieContainer.newKieSession("rulesSession");
 		kieSession.getAgenda().getAgendaGroup("illness-init").setFocus();
