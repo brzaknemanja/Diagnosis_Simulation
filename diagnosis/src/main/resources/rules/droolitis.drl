@@ -25,7 +25,7 @@ rule "Droolitis illness progression phase 2"
 	when 
 		$patient : Patient()
 		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 1) from $patient.illness
-		eval($patient.getIllnessProgressionCoefficient() >= 3)
+		eval($patient.getIllnessProgressionCoefficient() >= 4)
 	then
 		$patient.getIllness().increaseIllnessPhase();
 		update($patient)
@@ -36,7 +36,7 @@ rule "Droolitis illness progression phase 3"
 	when 
 		$patient : Patient()
 		$illness: Illness(illnessType == IllnessType.Droolitis, illnessPhase == 2) from $patient.illness
-		eval($patient.getIllnessProgressionCoefficient() >= 5)
+		eval($patient.getIllnessProgressionCoefficient() >= 7)
 	then
 		$patient.getIllness().increaseIllnessPhase();
 		update($patient)

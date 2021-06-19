@@ -62,7 +62,8 @@ public enum SymptomType
 	Arrhythmia,
 	Dizziness,
 	LiverFailure,
-	LungsFailure
+	LungsFailure,
+	HeavyBreathing
 }
 
 public enum Gender
